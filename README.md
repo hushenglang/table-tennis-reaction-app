@@ -47,8 +47,8 @@ This project is configured for automatic deployment to GitHub Pages using GitHub
 
 3. **Automatic Deployment**:
    - The CI/CD pipeline will automatically trigger on:
-     - Push to `main` branch
-     - Pull requests to `main` branch
+     - Push to `master` branch
+     - Pull requests to `master` branch
    - The workflow will build and deploy your site to GitHub Pages
    - Your site will be available at: `https://<username>.github.io/<repository-name>`
 
@@ -62,7 +62,7 @@ The GitHub Actions workflow (`.github/workflows/deploy.yml`) includes:
   - Uploads the site files as an artifact
 
 - **Deploy Job**: 
-  - Runs only on pushes to `main` branch
+  - Runs only on pushes to `master` branch
   - Deploys the artifact to GitHub Pages
   - Provides the deployment URL in the workflow output
 
