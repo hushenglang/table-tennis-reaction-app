@@ -82,18 +82,19 @@ header p {
 }
 
 .timer-display {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
-    color: white;
-    padding: 1rem;
-    border-radius: 15px;
-    margin-bottom: 2rem;
-    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: #666;
+    padding: 0.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .timer-display span {
-    font-size: 3rem;
-    font-weight: 700;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-shadow: none;
 }
 
 .direction-display {
@@ -434,14 +435,14 @@ header p {
     }
     
     .timer-display {
-        padding: 1.2rem;
-        border-radius: 18px;
-        margin-bottom: 1.5rem;
+        padding: 0.6rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
     }
     
     .timer-display span {
-        font-size: 2.8rem;
-        font-weight: 800;
+        font-size: 1.1rem;
+        font-weight: 500;
     }
     
     .control-buttons {
@@ -537,7 +538,7 @@ header p {
     }
     
     .timer-display span {
-        font-size: 2.5rem;
+        font-size: 1.1rem;
     }
     
     .timer-buttons {
@@ -638,12 +639,12 @@ header p {
     }
     
     .timer-display {
-        padding: 0.8rem;
-        margin-bottom: 1rem;
+        padding: 0.4rem;
+        margin-bottom: 0.8rem;
     }
     
     .timer-display span {
-        font-size: 2rem;
+        font-size: 1rem;
     }
     
     .control-buttons {

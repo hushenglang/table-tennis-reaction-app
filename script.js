@@ -10,9 +10,11 @@ class TableTennisReactionApp {
         this.intervals = [];
         this.lastCallTime = 0;
         this.lastDirection = null;
+        this.audioContext = null;
         
         this.initializeElements();
         this.bindEvents();
+        this.initializeAudio();
     }
 
     initializeElements() {
@@ -51,6 +53,53 @@ class TableTennisReactionApp {
         this.backBtn.addEventListener('click', () => this.backToSelection());
     }
 
+    initializeAudio() {
+        // Initialize Web Audio API context (will be created on first user interaction)
+        this.audioContext = null;
+    }
+
+    createAudioContext() {
+        if (!this.audioContext) {
+            try {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.warn('Web Audio API not supported:', e);
+            }
+        }
+        return this.audioContext;
+    }
+
+    playBeep(frequency, duration = 200) {
+        const audioContext = this.createAudioContext();
+        if (!audioContext) return;
+
+        try {
+            // Resume audio context if it's suspended (required by some browsers)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            oscillator.type = 'sine';
+
+            // Create a smooth envelope to avoid clicks
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration / 1000);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration / 1000);
+        } catch (e) {
+            console.warn('Error playing beep:', e);
+        }
+    }
+
     selectTimer(seconds) {
         this.selectedTime = seconds;
         this.timeRemaining = seconds;
@@ -77,6 +126,9 @@ class TableTennisReactionApp {
 
     startPractice() {
         if (this.isRunning) return;
+        
+        // Initialize audio context on user interaction
+        this.createAudioContext();
         
         this.isRunning = true;
         this.startBtn.style.display = 'none';
@@ -212,11 +264,13 @@ class TableTennisReactionApp {
     }
 
     highlightBox(direction) {
-        // Highlight the appropriate box
+        // Highlight the appropriate box and play sound
         if (direction === 'left') {
             this.leftBox.classList.add('active');
+            this.playBeep(800, 150); // Higher pitch for left
         } else {
             this.rightBox.classList.add('active');
+            this.playBeep(400, 150); // Lower pitch for right
         }
     }
 
