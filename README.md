@@ -6,7 +6,10 @@ A web application for training table tennis reflexes with random direction calls
 
 - **Multiple Practice Durations**: Choose from 1, 2, or 3 minute practice sessions
 - **Random Direction Calls**: Random left/right directions with variable timing (1-1.5 seconds)
-- **Visual Feedback**: Clear visual indicators with smooth animations
+- **Enhanced Pose Detection**: AI-powered body movement tracking using MediaPipe
+- **Real-time Movement Feedback**: Visual feedback for correct/incorrect body alignment
+- **Calibration System**: Personalized movement sensitivity calibration
+- **Pose Visualization**: Optional overlay showing detected body landmarks
 - **Practice Statistics**: Track total calls and average intervals
 - **Keyboard Shortcuts**: Space to start/stop, Escape to go back, number keys for timer selection
 - **Responsive Design**: Works on desktop and mobile devices
@@ -85,10 +88,24 @@ table-tennis-reaction-app/
 
 ## Usage
 
-1. **Select Duration**: Choose your practice duration (1, 2, or 3 minutes)
-2. **Start Practice**: Click "Start Practice" or press the Space bar
-3. **Follow Directions**: React to the highlighted left (L) or right (R) boxes
-4. **View Stats**: After completion, see your total calls and average interval
+1. **Setup Camera**: Allow camera access for pose-based movement tracking
+2. **Configure Settings**: 
+   - Toggle pose visualization overlay if desired
+   - Adjust movement sensitivity using the slider
+   - Run calibration to establish your baseline pose
+3. **Select Duration**: Choose your practice duration (1, 2, or 3 minutes)
+4. **Start Practice**: Click "Start Practice" or press the Space bar
+5. **Follow Directions**: React to the highlighted left (L) or right (R) boxes with body movements
+6. **Real-time Feedback**: See green borders for correct movements, red for incorrect
+7. **View Stats**: After completion, see your total calls and average interval
+
+### Movement Detection
+
+The app uses advanced AI pose detection to track your body movements:
+- **Arm Movements**: Extend your left/right arm to indicate direction
+- **Body Lean**: Lean your body left or right for detection
+- **Calibration**: Use the calibration feature for personalized accuracy
+- **Sensitivity**: Adjust the movement threshold to match your range of motion
 
 ### Keyboard Shortcuts
 

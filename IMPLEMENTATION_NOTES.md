@@ -46,64 +46,103 @@ this.countdownInterval = null;
 - [ ] Practice starts automatically after countdown
 - [ ] All existing functionality remains intact
 
-## Issue #2: Camera Movement Detection Implementation
+## Issue #2: Enhanced Pose-Based Movement Detection Implementation
 
 ### Files Modified
-- `script.js` - Camera access and motion detection
-- `style.css` - Movement feedback styling
-- `index.html` - Camera status UI
+- `script.js` - MediaPipe pose detection and movement analysis
+- `style.css` - Enhanced movement feedback styling and pose overlay
+- `index.html` - Pose detection UI controls and canvas overlay
 
 ### Key Implementation Details
 
-#### Camera Setup
+#### Enhanced Camera Setup with MediaPipe
 ```javascript
-// Camera initialization with permission handling
+// Camera initialization with MediaPipe Pose detection
 async setupCamera() {
     // Creates hidden video element for camera feed
-    // Requests camera permission with 320x240 resolution
+    // Initializes MediaPipe Pose detection with optimal settings
+    // Requests camera permission with 640x480 resolution
     // Handles permission denial gracefully
+    // Sets up pose visualization canvas
 }
 ```
 
-#### Motion Detection Algorithm
-1. **Frame Capture:** Draw video to canvas at 320x240 resolution
-2. **Motion Analysis:** Compare current frame with previous frame
-3. **Direction Detection:** Analyze motion in left/right halves of frame
-4. **Threshold Check:** Motion intensity > 30 triggers direction detection
+#### Pose Detection Algorithm
+1. **Pose Landmarks:** Uses MediaPipe to detect 33 body landmarks in real-time
+2. **Body Movement Analysis:** Analyzes shoulder and wrist positions for arm movements
+3. **Direction Detection:** Detects left/right movements based on:
+   - Arm extension relative to shoulders
+   - Arm position (raised vs lowered)
+   - Body lean detection using shoulder center movement
+4. **Baseline Calibration:** Establishes user's neutral position for accurate detection
 
-#### Visual Feedback System
+#### Enhanced Visual Feedback System
 - **Green Border:** `movement-correct` class when alignment is correct
 - **Red Border:** `movement-incorrect` class when misaligned
+- **Pose Overlay:** Optional real-time pose skeleton visualization
+- **Calibration UI:** User-friendly calibration system with visual feedback
 - Applied to active direction box (L or R)
 
+#### New Features Added
+- **Pose Visualization:** Optional overlay showing detected pose landmarks and connections
+- **Movement Sensitivity Control:** Adjustable slider for fine-tuning detection sensitivity
+- **Calibration System:** 3-second calibration process to establish user's baseline pose
+- **Enhanced UI Controls:** Checkboxes and sliders for pose detection settings
+
 #### Integration Points
-- Motion detection starts/stops with practice sessions
-- Real-time feedback during direction calls
+- Pose detection starts/stops with practice sessions
+- Real-time pose analysis during direction calls
 - Camera status displayed on timer selection screen
+- Pose options panel with advanced controls
 
 ### Technical Specifications
 
-#### Motion Calculation Logic
+#### Enhanced Pose Analysis Logic
 ```javascript
-// Divides frame into left/right halves
-// Calculates grayscale difference between frames
-// Determines movement direction based on motion distribution
-// Uses 1.2x threshold to avoid false positives
+// Uses MediaPipe pose landmarks for accurate body tracking
+// Analyzes shoulder (landmarks 11, 12) and wrist (landmarks 15, 16) positions
+// Calculates arm extension and body lean for movement detection
+// Implements baseline calibration for personalized sensitivity
+// Uses configurable movement threshold (0.1-1.0 scale)
 ```
 
-#### Browser Compatibility
-- Uses standard Web APIs (getUserMedia, Canvas)
-- Works on modern browsers with camera support
-- Graceful fallback when camera unavailable
+#### Advanced Browser Integration
+- **MediaPipe Integration:** Uses CDN-hosted MediaPipe Pose model
+- **Real-time Processing:** Optimized for 30fps pose detection
+- **Canvas Rendering:** Hardware-accelerated pose visualization
+- **Graceful Fallback:** Works without pose detection if MediaPipe unavailable
 
-### Testing Checklist
-- [ ] Camera permission requested on app load
-- [ ] Motion detection activates during practice
-- [ ] Left/right movement correctly detected
-- [ ] Visual feedback shows green for correct alignment
-- [ ] Visual feedback shows red for incorrect alignment
-- [ ] App works normally without camera access
-- [ ] Camera status updates appropriately
+### Enhanced Testing Checklist
+- [ ] **Camera & Pose Setup**
+  - [ ] Camera permission requested on app load
+  - [ ] MediaPipe pose detection initializes successfully
+  - [ ] Pose options panel appears when camera is ready
+  - [ ] Graceful fallback when MediaPipe or camera unavailable
+
+- [ ] **Pose Detection Functionality**
+  - [ ] Real-time pose landmarks detected and tracked
+  - [ ] Left arm movements correctly detected as 'left'
+  - [ ] Right arm movements correctly detected as 'right'
+  - [ ] Body lean detection works for left/right movement
+  - [ ] Movement sensitivity slider affects detection threshold
+
+- [ ] **Calibration System**
+  - [ ] Calibration button triggers 3-second calibration process
+  - [ ] Baseline pose established from neutral position
+  - [ ] Calibration complete/failed feedback displayed
+  - [ ] Detection accuracy improves after calibration
+
+- [ ] **Visual Feedback & Overlay**
+  - [ ] Green border for correct movement alignment
+  - [ ] Red border for incorrect movement alignment
+  - [ ] Pose overlay toggle works correctly
+  - [ ] Pose skeleton renders accurately when enabled
+
+- [ ] **Integration & Performance**
+  - [ ] Pose detection starts/stops with practice sessions
+  - [ ] No significant performance impact during practice
+  - [ ] Camera status updates appropriately
+  - [ ] All existing app functionality preserved
 
 ## Code Quality Notes
 

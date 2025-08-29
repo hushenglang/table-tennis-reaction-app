@@ -12,16 +12,23 @@ class TableTennisReactionApp {
         this.lastDirection = null;
         this.audioContext = null;
         
-        // Camera and movement detection
+        // Camera and pose detection
         this.videoElement = null;
         this.cameraCanvas = null;
         this.cameraContext = null;
-        this.previousFrame = null;
-        this.motionDetectionEnabled = false;
-        this.movementThreshold = 30;
+        this.poseCanvas = null;
+        this.poseContext = null;
+        this.pose = null;
+        this.camera = null;
+        this.poseDetectionEnabled = false;
+        this.movementSensitivity = 0.3;
         this.lastMovementDirection = null;
         this.movementCorrect = false;
-        this.motionDetectionActive = false;
+        this.poseDetectionActive = false;
+        this.showPoseOverlay = false;
+        this.currentPose = null;
+        this.previousPose = null;
+        this.baselinePose = null;
         
         this.initializeElements();
         this.bindEvents();
@@ -52,6 +59,13 @@ class TableTennisReactionApp {
         
         // Camera status element
         this.cameraStatusElement = document.getElementById('cameraStatus');
+        
+        // Pose detection elements
+        this.poseOptionsDiv = document.getElementById('poseOptions');
+        this.showPoseOverlayCheckbox = document.getElementById('showPoseOverlay');
+        this.movementSensitivitySlider = document.getElementById('movementSensitivity');
+        this.poseCanvas = document.getElementById('poseCanvas');
+        this.calibrateButton = document.getElementById('calibrateButton');
     }
 
     bindEvents() {
@@ -66,6 +80,26 @@ class TableTennisReactionApp {
         this.startBtn.addEventListener('click', () => this.startPractice());
         this.stopBtn.addEventListener('click', () => this.stopPractice());
         this.backBtn.addEventListener('click', () => this.backToSelection());
+        
+        // Pose detection controls
+        if (this.showPoseOverlayCheckbox) {
+            this.showPoseOverlayCheckbox.addEventListener('change', (e) => {
+                this.showPoseOverlay = e.target.checked;
+                this.togglePoseOverlay();
+            });
+        }
+        
+        if (this.movementSensitivitySlider) {
+            this.movementSensitivitySlider.addEventListener('input', (e) => {
+                this.movementSensitivity = parseFloat(e.target.value);
+            });
+        }
+        
+        if (this.calibrateButton) {
+            this.calibrateButton.addEventListener('click', () => {
+                this.startCalibration();
+            });
+        }
     }
 
     initializeAudio() {
@@ -161,7 +195,7 @@ class TableTennisReactionApp {
         this.lastDirection = null;
         
         // Start motion detection if camera is available
-        this.startMotionDetection();
+        this.startPoseDetection();
         
         // Start the main timer
         this.timerInterval = setInterval(() => {
@@ -187,8 +221,8 @@ class TableTennisReactionApp {
         this.startBtn.style.display = 'inline-block';
         this.stopBtn.style.display = 'none';
         
-        // Stop motion detection
-        this.stopMotionDetection();
+        // Stop pose detection
+        this.stopPoseDetection();
         
         // Clear all intervals and timeouts
         if (this.timerInterval) {
@@ -219,8 +253,8 @@ class TableTennisReactionApp {
         this.startBtn.style.display = 'inline-block';
         this.stopBtn.style.display = 'none';
         
-        // Stop motion detection
-        this.stopMotionDetection();
+        // Stop pose detection
+        this.stopPoseDetection();
         
         // Clear intervals
         if (this.timerInterval) {
@@ -354,6 +388,11 @@ class TableTennisReactionApp {
 
     async setupCamera() {
         try {
+            // Check if MediaPipe is available
+            if (typeof Pose === 'undefined') {
+                throw new Error('MediaPipe Pose not loaded');
+            }
+
             // Create video element for camera feed
             this.videoElement = document.createElement('video');
             this.videoElement.setAttribute('autoplay', '');
@@ -362,17 +401,34 @@ class TableTennisReactionApp {
             this.videoElement.style.display = 'none';
             document.body.appendChild(this.videoElement);
 
-            // Create canvas for motion detection
-            this.cameraCanvas = document.createElement('canvas');
-            this.cameraCanvas.width = 320;
-            this.cameraCanvas.height = 240;
-            this.cameraContext = this.cameraCanvas.getContext('2d');
+            // Setup pose canvas
+            if (this.poseCanvas) {
+                this.poseContext = this.poseCanvas.getContext('2d');
+            }
+
+            // Initialize MediaPipe Pose
+            this.pose = new Pose({
+                locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+                }
+            });
+
+            this.pose.setOptions({
+                modelComplexity: 1,
+                smoothSegmentation: true,
+                enableSegmentation: false,
+                smoothLandmarks: true,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5
+            });
+
+            this.pose.onResults((results) => this.onPoseResults(results));
 
             // Request camera permission
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: { 
-                    width: 320, 
-                    height: 240,
+                    width: 640, 
+                    height: 480,
                     facingMode: 'user'
                 }
             });
@@ -382,13 +438,29 @@ class TableTennisReactionApp {
                 this.videoElement.onloadedmetadata = resolve;
             });
 
-            console.log('Camera initialized successfully');
-            this.motionDetectionEnabled = true;
-            this.updateCameraStatus('✅ Camera ready for body movement tracking');
+            // Initialize camera utility
+            this.camera = new Camera(this.videoElement, {
+                onFrame: async () => {
+                    if (this.poseDetectionActive) {
+                        await this.pose.send({ image: this.videoElement });
+                    }
+                },
+                width: 640,
+                height: 480
+            });
+
+            console.log('Camera and pose detection initialized successfully');
+            this.poseDetectionEnabled = true;
+            this.updateCameraStatus('✅ Camera ready for pose-based movement tracking');
+            
+            // Show pose options
+            if (this.poseOptionsDiv) {
+                this.poseOptionsDiv.style.display = 'block';
+            }
         } catch (error) {
-            console.warn('Camera access failed:', error);
-            this.motionDetectionEnabled = false;
-            this.updateCameraStatus('⚠️ Camera not available - practice will work without movement tracking');
+            console.warn('Camera or pose detection setup failed:', error);
+            this.poseDetectionEnabled = false;
+            this.updateCameraStatus('⚠️ Camera/pose detection not available - practice will work without movement tracking');
         }
     }
 
@@ -398,93 +470,233 @@ class TableTennisReactionApp {
         }
     }
 
-    startMotionDetection() {
-        if (!this.motionDetectionEnabled || this.motionDetectionActive) return;
+    startPoseDetection() {
+        if (!this.poseDetectionEnabled || this.poseDetectionActive) return;
         
-        this.motionDetectionActive = true;
-        this.previousFrame = null;
-        this.detectMotion();
+        this.poseDetectionActive = true;
+        this.previousPose = null;
+        this.baselinePose = null;
+        
+        // Start camera feed
+        if (this.camera) {
+            this.camera.start();
+        }
     }
 
-    stopMotionDetection() {
-        this.motionDetectionActive = false;
+    stopPoseDetection() {
+        this.poseDetectionActive = false;
         this.lastMovementDirection = null;
         this.movementCorrect = false;
+        this.currentPose = null;
+        this.previousPose = null;
+        this.baselinePose = null;
+        
+        // Stop camera feed
+        if (this.camera) {
+            this.camera.stop();
+        }
     }
 
-    detectMotion() {
-        if (!this.motionDetectionActive || !this.videoElement) return;
+    onPoseResults(results) {
+        if (!this.poseDetectionActive) return;
+        
+        this.currentPose = results;
+        
+        // Draw pose visualization if enabled
+        if (this.showPoseOverlay && this.poseContext && this.poseCanvas) {
+            this.drawPoseOverlay(results);
+        }
+        
+        // Analyze pose for movement direction
+        if (results.poseLandmarks) {
+            this.analyzePoseMovement(results.poseLandmarks);
+        }
+    }
 
-        // Draw current frame to canvas
-        this.cameraContext.drawImage(this.videoElement, 0, 0, this.cameraCanvas.width, this.cameraCanvas.height);
+    analyzePoseMovement(landmarks) {
+        // Use shoulder and wrist landmarks for movement detection
+        const leftShoulder = landmarks[11];  // LEFT_SHOULDER
+        const rightShoulder = landmarks[12]; // RIGHT_SHOULDER
+        const leftWrist = landmarks[15];     // LEFT_WRIST
+        const rightWrist = landmarks[16];    // RIGHT_WRIST
         
-        // Get current frame data
-        const currentFrame = this.cameraContext.getImageData(0, 0, this.cameraCanvas.width, this.cameraCanvas.height);
+        if (!leftShoulder || !rightShoulder || !leftWrist || !rightWrist) return;
         
-        if (this.previousFrame) {
-            // Calculate motion between frames
-            const motion = this.calculateMotion(this.previousFrame, currentFrame);
+        // Calculate shoulder center as reference point
+        const shoulderCenterX = (leftShoulder.x + rightShoulder.x) / 2;
+        
+        // Calculate arm extensions relative to shoulder center
+        const leftArmExtension = Math.abs(leftWrist.x - leftShoulder.x);
+        const rightArmExtension = Math.abs(rightWrist.x - rightShoulder.x);
+        
+        // Check if arms are raised (Y position comparison)
+        const leftArmRaised = leftWrist.y < leftShoulder.y - 0.1;
+        const rightArmRaised = rightWrist.y < rightShoulder.y - 0.1;
+        
+        // Establish baseline on first detection
+        if (!this.baselinePose) {
+            this.baselinePose = {
+                leftArmExtension,
+                rightArmExtension,
+                shoulderCenterX
+            };
+            return;
+        }
+        
+        // Calculate movement relative to baseline
+        const leftMovement = leftArmExtension - this.baselinePose.leftArmExtension;
+        const rightMovement = rightArmExtension - this.baselinePose.rightArmExtension;
+        
+        // Detect significant movement with sensitivity adjustment
+        const movementThreshold = this.movementSensitivity;
+        
+        let detectedDirection = null;
+        
+        // Left movement: left arm extended OR body leaning left
+        if ((leftMovement > movementThreshold && leftArmRaised) || 
+            (shoulderCenterX < this.baselinePose.shoulderCenterX - movementThreshold)) {
+            detectedDirection = 'left';
+        }
+        // Right movement: right arm extended OR body leaning right  
+        else if ((rightMovement > movementThreshold && rightArmRaised) || 
+                 (shoulderCenterX > this.baselinePose.shoulderCenterX + movementThreshold)) {
+            detectedDirection = 'right';
+        }
+        
+        if (detectedDirection && detectedDirection !== this.lastMovementDirection) {
+            this.lastMovementDirection = detectedDirection;
+            this.checkMovementAlignment();
+        }
+    }
+
+    drawPoseOverlay(results) {
+        if (!this.poseContext || !this.poseCanvas) return;
+        
+        // Clear canvas
+        this.poseContext.clearRect(0, 0, this.poseCanvas.width, this.poseCanvas.height);
+        
+        if (results.poseLandmarks) {
+            // Set canvas size to match container
+            const rect = this.poseCanvas.getBoundingClientRect();
+            this.poseCanvas.width = rect.width;
+            this.poseCanvas.height = rect.height;
             
-            if (motion.intensity > this.movementThreshold) {
-                this.lastMovementDirection = motion.direction;
-                this.checkMovementAlignment();
-            }
-        }
-        
-        this.previousFrame = currentFrame;
-        
-        // Continue detection
-        if (this.motionDetectionActive) {
-            requestAnimationFrame(() => this.detectMotion());
+            // Draw pose landmarks
+            this.poseContext.save();
+            this.poseContext.scale(this.poseCanvas.width, this.poseCanvas.height);
+            
+            // Draw connections
+            drawConnectors(this.poseContext, results.poseLandmarks, POSE_CONNECTIONS, {
+                color: '#00FF00',
+                lineWidth: 2
+            });
+            
+            // Draw landmarks
+            drawLandmarks(this.poseContext, results.poseLandmarks, {
+                color: '#FF0000',
+                radius: 3
+            });
+            
+            this.poseContext.restore();
         }
     }
 
-    calculateMotion(prevFrame, currFrame) {
-        const prevData = prevFrame.data;
-        const currData = currFrame.data;
-        const width = this.cameraCanvas.width;
-        const height = this.cameraCanvas.height;
-        
-        let leftMotion = 0;
-        let rightMotion = 0;
-        let totalMotion = 0;
-        
-        // Divide frame into left and right halves
-        const centerX = width / 2;
-        
-        for (let y = 0; y < height; y += 4) {
-            for (let x = 0; x < width; x += 4) {
-                const index = (y * width + x) * 4;
-                
-                // Calculate grayscale difference
-                const prevGray = (prevData[index] + prevData[index + 1] + prevData[index + 2]) / 3;
-                const currGray = (currData[index] + currData[index + 1] + currData[index + 2]) / 3;
-                const diff = Math.abs(prevGray - currGray);
-                
-                if (diff > 20) {
-                    totalMotion += diff;
-                    if (x < centerX) {
-                        leftMotion += diff;
-                    } else {
-                        rightMotion += diff;
-                    }
+    togglePoseOverlay() {
+        if (this.poseCanvas) {
+            this.poseCanvas.style.display = this.showPoseOverlay ? 'block' : 'none';
+        }
+    }
+
+    async startCalibration() {
+        if (!this.poseDetectionEnabled) {
+            alert('Camera not available for calibration');
+            return;
+        }
+
+        // Update button state
+        this.calibrateButton.textContent = 'Calibrating... Stand in neutral position';
+        this.calibrateButton.classList.add('calibrating');
+        this.calibrateButton.disabled = true;
+
+        // Start pose detection if not already running
+        if (!this.poseDetectionActive) {
+            this.startPoseDetection();
+        }
+
+        // Reset baseline
+        this.baselinePose = null;
+
+        // Wait for stable pose detection
+        let calibrationData = [];
+        let calibrationTime = 3000; // 3 seconds
+        let startTime = Date.now();
+
+        const calibrationInterval = setInterval(() => {
+            if (this.currentPose && this.currentPose.poseLandmarks) {
+                const landmarks = this.currentPose.poseLandmarks;
+                const leftShoulder = landmarks[11];
+                const rightShoulder = landmarks[12];
+                const leftWrist = landmarks[15];
+                const rightWrist = landmarks[16];
+
+                if (leftShoulder && rightShoulder && leftWrist && rightWrist) {
+                    calibrationData.push({
+                        leftArmExtension: Math.abs(leftWrist.x - leftShoulder.x),
+                        rightArmExtension: Math.abs(rightWrist.x - rightShoulder.x),
+                        shoulderCenterX: (leftShoulder.x + rightShoulder.x) / 2
+                    });
                 }
             }
+
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.ceil((calibrationTime - elapsed) / 1000);
+            
+            if (remaining > 0) {
+                this.calibrateButton.textContent = `Calibrating... ${remaining}s`;
+            }
+
+            if (elapsed >= calibrationTime) {
+                clearInterval(calibrationInterval);
+                this.finishCalibration(calibrationData);
+            }
+        }, 100);
+    }
+
+    finishCalibration(calibrationData) {
+        if (calibrationData.length > 10) {
+            // Calculate average baseline pose
+            const avgLeftArmExtension = calibrationData.reduce((sum, data) => sum + data.leftArmExtension, 0) / calibrationData.length;
+            const avgRightArmExtension = calibrationData.reduce((sum, data) => sum + data.rightArmExtension, 0) / calibrationData.length;
+            const avgShoulderCenterX = calibrationData.reduce((sum, data) => sum + data.shoulderCenterX, 0) / calibrationData.length;
+
+            this.baselinePose = {
+                leftArmExtension: avgLeftArmExtension,
+                rightArmExtension: avgRightArmExtension,
+                shoulderCenterX: avgShoulderCenterX
+            };
+
+            this.calibrateButton.textContent = 'Calibration Complete!';
+            this.calibrateButton.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+            
+            setTimeout(() => {
+                this.calibrateButton.textContent = 'Calibrate Movement';
+                this.calibrateButton.classList.remove('calibrating');
+                this.calibrateButton.disabled = false;
+                this.calibrateButton.style.background = '';
+            }, 2000);
+
+            console.log('Calibration successful:', this.baselinePose);
+        } else {
+            this.calibrateButton.textContent = 'Calibration Failed - Try Again';
+            this.calibrateButton.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+            
+            setTimeout(() => {
+                this.calibrateButton.textContent = 'Calibrate Movement';
+                this.calibrateButton.classList.remove('calibrating');
+                this.calibrateButton.disabled = false;
+                this.calibrateButton.style.background = '';
+            }, 2000);
         }
-        
-        let direction = null;
-        if (leftMotion > rightMotion * 1.2) {
-            direction = 'left';
-        } else if (rightMotion > leftMotion * 1.2) {
-            direction = 'right';
-        }
-        
-        return {
-            intensity: totalMotion,
-            direction: direction,
-            leftMotion: leftMotion,
-            rightMotion: rightMotion
-        };
     }
 
     checkMovementAlignment() {
