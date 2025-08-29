@@ -42,8 +42,11 @@ This project is configured for automatic deployment to GitHub Pages using GitHub
 
 2. **Enable GitHub Pages**:
    - Go to your repository on GitHub
-   - Navigate to **Settings** → **Pages**
-   - Under "Source", select **GitHub Actions**
+   - Navigate to **Settings** → **Pages** (in left sidebar under "Code and automation")
+   - Under "Source", select **GitHub Actions** (not "Deploy from a branch")
+   - **Important**: If you don't see "GitHub Actions" option:
+     - Make sure your repository is **public** OR you have GitHub Pro/Team
+     - Ensure you have admin access to the repository
 
 3. **Automatic Deployment**:
    - The CI/CD pipeline will automatically trigger on:
@@ -99,6 +102,37 @@ table-tennis-reaction-app/
 - **Deployment**: GitHub Pages
 - **CI/CD**: GitHub Actions
 - **Styling**: CSS Grid, Flexbox, CSS Animations
+
+## 🔧 Troubleshooting
+
+### Common GitHub Pages Issues:
+
+#### Error: "Pages site failed. Please verify that the repository has Pages enabled"
+
+**Solution:**
+1. **Check Repository Settings**:
+   - Go to repository **Settings** → **Pages**
+   - Ensure "Source" is set to **GitHub Actions**
+   - Make sure repository is **public** (or you have GitHub Pro/Team)
+
+2. **Verify Permissions**:
+   - You need **admin access** to the repository
+   - Check that Actions have **read/write permissions**
+
+3. **Force Re-deployment**:
+   - Go to **Actions** tab in your repository
+   - Click on the failed workflow
+   - Click **"Re-run all jobs"**
+
+4. **Check Action Logs**:
+   - Review the workflow logs for specific error messages
+   - Look for permission or authentication issues
+
+#### Other Common Issues:
+
+- **404 Error on Site**: Wait 5-10 minutes after first deployment
+- **CSS/JS Not Loading**: Check file paths are relative (no leading `/`)
+- **Workflow Not Triggering**: Ensure you're pushing to `master` branch
 
 ## Contributing
 
