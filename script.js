@@ -263,7 +263,7 @@ class TableTennisReactionApp {
         }
         
         // Show completion message
-        this.statusText.textContent = 'Complete!';
+        this.statusText.textContent = 'Good~';
         this.statusText.style.display = 'block';
         this.clearBoxHighlights();
         
