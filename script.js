@@ -12,9 +12,21 @@ class TableTennisReactionApp {
         this.lastDirection = null;
         this.audioContext = null;
         
+        // Camera and movement detection
+        this.videoElement = null;
+        this.cameraCanvas = null;
+        this.cameraContext = null;
+        this.previousFrame = null;
+        this.motionDetectionEnabled = false;
+        this.movementThreshold = 30;
+        this.lastMovementDirection = null;
+        this.movementCorrect = false;
+        this.motionDetectionActive = false;
+        
         this.initializeElements();
         this.bindEvents();
         this.initializeAudio();
+        this.setupCamera();
     }
 
     initializeElements() {
@@ -37,6 +49,9 @@ class TableTennisReactionApp {
         this.statsDiv = document.getElementById('stats');
         this.totalCallsSpan = document.getElementById('totalCalls');
         this.avgIntervalSpan = document.getElementById('avgInterval');
+        
+        // Camera status element
+        this.cameraStatusElement = document.getElementById('cameraStatus');
     }
 
     bindEvents() {
@@ -145,6 +160,9 @@ class TableTennisReactionApp {
         this.lastCallTime = Date.now();
         this.lastDirection = null;
         
+        // Start motion detection if camera is available
+        this.startMotionDetection();
+        
         // Start the main timer
         this.timerInterval = setInterval(() => {
             this.timeRemaining--;
@@ -168,6 +186,9 @@ class TableTennisReactionApp {
         this.isRunning = false;
         this.startBtn.style.display = 'inline-block';
         this.stopBtn.style.display = 'none';
+        
+        // Stop motion detection
+        this.stopMotionDetection();
         
         // Clear all intervals and timeouts
         if (this.timerInterval) {
@@ -197,6 +218,9 @@ class TableTennisReactionApp {
         this.isRunning = false;
         this.startBtn.style.display = 'inline-block';
         this.stopBtn.style.display = 'none';
+        
+        // Stop motion detection
+        this.stopMotionDetection();
         
         // Clear intervals
         if (this.timerInterval) {
@@ -288,8 +312,8 @@ class TableTennisReactionApp {
     }
 
     clearBoxHighlights() {
-        this.leftBox.classList.remove('active');
-        this.rightBox.classList.remove('active');
+        this.leftBox.classList.remove('active', 'movement-correct', 'movement-incorrect');
+        this.rightBox.classList.remove('active', 'movement-correct', 'movement-incorrect');
     }
 
     updateTimeDisplay() {
@@ -326,6 +350,179 @@ class TableTennisReactionApp {
         this.intervals = [];
         this.lastDirection = null;
         this.statsDiv.style.display = 'none';
+    }
+
+    async setupCamera() {
+        try {
+            // Create video element for camera feed
+            this.videoElement = document.createElement('video');
+            this.videoElement.setAttribute('autoplay', '');
+            this.videoElement.setAttribute('muted', '');
+            this.videoElement.setAttribute('playsinline', '');
+            this.videoElement.style.display = 'none';
+            document.body.appendChild(this.videoElement);
+
+            // Create canvas for motion detection
+            this.cameraCanvas = document.createElement('canvas');
+            this.cameraCanvas.width = 320;
+            this.cameraCanvas.height = 240;
+            this.cameraContext = this.cameraCanvas.getContext('2d');
+
+            // Request camera permission
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { 
+                    width: 320, 
+                    height: 240,
+                    facingMode: 'user'
+                }
+            });
+
+            this.videoElement.srcObject = stream;
+            await new Promise((resolve) => {
+                this.videoElement.onloadedmetadata = resolve;
+            });
+
+            console.log('Camera initialized successfully');
+            this.motionDetectionEnabled = true;
+            this.updateCameraStatus('✅ Camera ready for body movement tracking');
+        } catch (error) {
+            console.warn('Camera access failed:', error);
+            this.motionDetectionEnabled = false;
+            this.updateCameraStatus('⚠️ Camera not available - practice will work without movement tracking');
+        }
+    }
+
+    updateCameraStatus(message) {
+        if (this.cameraStatusElement) {
+            this.cameraStatusElement.textContent = message;
+        }
+    }
+
+    startMotionDetection() {
+        if (!this.motionDetectionEnabled || this.motionDetectionActive) return;
+        
+        this.motionDetectionActive = true;
+        this.previousFrame = null;
+        this.detectMotion();
+    }
+
+    stopMotionDetection() {
+        this.motionDetectionActive = false;
+        this.lastMovementDirection = null;
+        this.movementCorrect = false;
+    }
+
+    detectMotion() {
+        if (!this.motionDetectionActive || !this.videoElement) return;
+
+        // Draw current frame to canvas
+        this.cameraContext.drawImage(this.videoElement, 0, 0, this.cameraCanvas.width, this.cameraCanvas.height);
+        
+        // Get current frame data
+        const currentFrame = this.cameraContext.getImageData(0, 0, this.cameraCanvas.width, this.cameraCanvas.height);
+        
+        if (this.previousFrame) {
+            // Calculate motion between frames
+            const motion = this.calculateMotion(this.previousFrame, currentFrame);
+            
+            if (motion.intensity > this.movementThreshold) {
+                this.lastMovementDirection = motion.direction;
+                this.checkMovementAlignment();
+            }
+        }
+        
+        this.previousFrame = currentFrame;
+        
+        // Continue detection
+        if (this.motionDetectionActive) {
+            requestAnimationFrame(() => this.detectMotion());
+        }
+    }
+
+    calculateMotion(prevFrame, currFrame) {
+        const prevData = prevFrame.data;
+        const currData = currFrame.data;
+        const width = this.cameraCanvas.width;
+        const height = this.cameraCanvas.height;
+        
+        let leftMotion = 0;
+        let rightMotion = 0;
+        let totalMotion = 0;
+        
+        // Divide frame into left and right halves
+        const centerX = width / 2;
+        
+        for (let y = 0; y < height; y += 4) {
+            for (let x = 0; x < width; x += 4) {
+                const index = (y * width + x) * 4;
+                
+                // Calculate grayscale difference
+                const prevGray = (prevData[index] + prevData[index + 1] + prevData[index + 2]) / 3;
+                const currGray = (currData[index] + currData[index + 1] + currData[index + 2]) / 3;
+                const diff = Math.abs(prevGray - currGray);
+                
+                if (diff > 20) {
+                    totalMotion += diff;
+                    if (x < centerX) {
+                        leftMotion += diff;
+                    } else {
+                        rightMotion += diff;
+                    }
+                }
+            }
+        }
+        
+        let direction = null;
+        if (leftMotion > rightMotion * 1.2) {
+            direction = 'left';
+        } else if (rightMotion > leftMotion * 1.2) {
+            direction = 'right';
+        }
+        
+        return {
+            intensity: totalMotion,
+            direction: direction,
+            leftMotion: leftMotion,
+            rightMotion: rightMotion
+        };
+    }
+
+    checkMovementAlignment() {
+        if (!this.lastDirection || !this.lastMovementDirection) return;
+        
+        // Check if body movement aligns with the direction being shown
+        this.movementCorrect = this.lastDirection === this.lastMovementDirection;
+        
+        // Provide visual feedback
+        this.updateMovementFeedback();
+    }
+
+    updateMovementFeedback() {
+        // Add visual feedback to the direction boxes
+        const leftBox = this.leftBox;
+        const rightBox = this.rightBox;
+        
+        // Remove previous feedback classes
+        leftBox.classList.remove('movement-correct', 'movement-incorrect');
+        rightBox.classList.remove('movement-correct', 'movement-incorrect');
+        
+        if (this.lastDirection && this.lastMovementDirection) {
+            if (this.movementCorrect) {
+                // Correct movement - add green highlight to the active box
+                if (this.lastDirection === 'left') {
+                    leftBox.classList.add('movement-correct');
+                } else {
+                    rightBox.classList.add('movement-correct');
+                }
+            } else {
+                // Incorrect movement - add red highlight to show misalignment
+                if (this.lastDirection === 'left') {
+                    leftBox.classList.add('movement-incorrect');
+                } else {
+                    rightBox.classList.add('movement-incorrect');
+                }
+            }
+        }
     }
 }
 
