@@ -3,6 +3,9 @@ class TableTennisReactionApp {
         this.selectedTime = 0;
         this.timeRemaining = 0;
         this.isRunning = false;
+        this.isCountingDown = false;
+        this.countdownValue = 0;
+        this.countdownInterval = null;
         this.timerInterval = null;
         this.directionInterval = null;
         this.directionTimeout = null;
@@ -130,20 +133,65 @@ class TableTennisReactionApp {
     }
 
     startPractice() {
-        if (this.isRunning) return;
+        if (this.isRunning || this.isCountingDown) return;
         
         // Initialize audio context on user interaction
         this.createAudioContext();
         
-        this.isRunning = true;
+        this.isCountingDown = true;
+        this.countdownValue = 3;
         this.startBtn.style.display = 'none';
         this.stopBtn.style.display = 'inline-block';
         this.statsDiv.style.display = 'none';
+        
+        // Show countdown in status text
+        this.statusText.style.display = 'block';
+        this.statusText.textContent = this.countdownValue.toString();
+        this.statusText.classList.add('countdown');
+        
+        // Clear any existing highlights
+        this.clearBoxHighlights();
+        
+        // Play initial countdown beep for "3"
+        this.playBeep(600, 200);
+        
+        // Start countdown
+        this.countdownInterval = setInterval(() => {
+            this.countdownValue--;
+            
+            if (this.countdownValue > 0) {
+                this.statusText.textContent = this.countdownValue.toString();
+                // Play countdown beep
+                this.playBeep(600, 200);
+            } else {
+                // Countdown finished, start the actual practice
+                this.statusText.textContent = 'GO!';
+                this.statusText.classList.remove('countdown');
+                this.playBeep(1000, 300); // Different sound for "GO!"
+                
+                // Clear countdown interval
+                clearInterval(this.countdownInterval);
+                this.countdownInterval = null;
+                this.isCountingDown = false;
+                
+                // Start the actual practice after showing "GO!" for a moment
+                setTimeout(() => {
+                    this.startActualPractice();
+                }, 500);
+            }
+        }, 1000);
+    }
+
+    startActualPractice() {
+        this.isRunning = true;
         
         this.totalCalls = 0;
         this.intervals = [];
         this.lastCallTime = Date.now();
         this.lastDirection = null;
+        
+        // Hide the status text now that practice is starting
+        this.statusText.style.display = 'none';
         
         // Start the main timer
         this.timerInterval = setInterval(() => {
@@ -163,9 +211,10 @@ class TableTennisReactionApp {
     }
 
     stopPractice() {
-        if (!this.isRunning) return;
+        if (!this.isRunning && !this.isCountingDown) return;
         
         this.isRunning = false;
+        this.isCountingDown = false;
         this.startBtn.style.display = 'inline-block';
         this.stopBtn.style.display = 'none';
         
@@ -178,10 +227,15 @@ class TableTennisReactionApp {
             clearTimeout(this.directionTimeout);
             this.directionTimeout = null;
         }
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+        }
         
         // Reset display
         this.statusText.textContent = 'Stopped';
         this.statusText.style.display = 'block';
+        this.statusText.classList.remove('countdown');
         this.clearBoxHighlights();
         
         // Reset timer
@@ -209,7 +263,7 @@ class TableTennisReactionApp {
         }
         
         // Show completion message
-        this.statusText.textContent = 'Complete!';
+        this.statusText.textContent = 'Good~';
         this.statusText.style.display = 'block';
         this.clearBoxHighlights();
         
@@ -253,9 +307,8 @@ class TableTennisReactionApp {
         const directions = ['left', 'right'];
         const randomDirection = directions[Math.floor(Math.random() * directions.length)];
         
-        // Clear previous highlights and hide status text
+        // Clear previous highlights
         this.clearBoxHighlights();
-        this.statusText.style.display = 'none';
         
         // If same direction as last time, add a clear gap before showing
         if (this.lastDirection === randomDirection && this.totalCalls > 0) {
