@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#667eea">
+    <title>Table Tennis Reaction Practice</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏓 Table Tennis Reaction Practice</h1>
+            <p>Train your reflexes with random direction calls</p>
+        </header>
+
+        <main>
+            <div class="timer-selection">
+                <h2>Select Practice Duration</h2>
+                <div class="timer-buttons">
+                    <button class="timer-btn" data-time="60">1 Minute</button>
+                    <button class="timer-btn" data-time="120">2 Minutes</button>
+                    <button class="timer-btn" data-time="180">3 Minutes</button>
+                </div>
+            </div>
+
+            <div class="practice-area" id="practiceArea" style="display: none;">
+                <div class="timer-display">
+                    <span id="timeRemaining">1:00</span>
+                </div>
+                
+                <div class="direction-display" id="directionDisplay">
+                    <div class="box left-box" id="leftBox">L</div>
+                    <div class="box right-box" id="rightBox">R</div>
+                    <div class="status-text" id="statusText">Ready?</div>
+                </div>
+
+                <div class="control-buttons">
+                    <button id="startBtn" class="control-btn start">Start Practice</button>
+                    <button id="stopBtn" class="control-btn stop" style="display: none;">Stop Practice</button>
+                    <button id="backBtn" class="control-btn back">Back to Timer Selection</button>
+                </div>
+
+                <div class="stats" id="stats" style="display: none;">
+                    <h3>Practice Complete!</h3>
+                    <p>Total directions called: <span id="totalCalls">0</span></p>
+                    <p>Average interval: <span id="avgInterval">0</span>s</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
