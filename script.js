@@ -1,6 +1,7 @@
 class TableTennisReactionApp {
     constructor() {
         this.selectedTime = 0;
+        this.selectedMode = 'basic';
         this.timeRemaining = 0;
         this.isRunning = false;
         this.isCountingDown = false;
@@ -21,16 +22,35 @@ class TableTennisReactionApp {
     }
 
     initializeElements() {
+        // Header
+        this.header = document.getElementById('header');
+        
         // Timer selection elements
         this.timerButtons = document.querySelectorAll('.timer-btn');
         this.timerSelectionDiv = document.querySelector('.timer-selection');
-        this.practiceArea = document.getElementById('practiceArea');
+        
+        // Mode selection elements
+        this.modeSelectionDiv = document.getElementById('modeSelection');
+        this.modeButtons = document.querySelectorAll('.mode-btn');
+        this.backToTimerBtn = document.getElementById('backToTimerBtn');
         
         // Practice area elements
+        this.practiceArea = document.getElementById('practiceArea');
         this.timeDisplay = document.getElementById('timeRemaining');
         this.directionDisplay = document.getElementById('directionDisplay');
+        
+        // Basic mode elements
+        this.basicLayout = document.getElementById('basicLayout');
         this.leftBox = document.getElementById('leftBox');
         this.rightBox = document.getElementById('rightBox');
+        
+        // Advanced mode elements
+        this.advancedLayout = document.getElementById('advancedLayout');
+        this.leftBoxAdv = document.getElementById('leftBoxAdv');
+        this.rightBoxAdv = document.getElementById('rightBoxAdv');
+        this.leftForwardBox = document.getElementById('leftForwardBox');
+        this.rightForwardBox = document.getElementById('rightForwardBox');
+        
         this.statusText = document.getElementById('statusText');
         this.startBtn = document.getElementById('startBtn');
         this.stopBtn = document.getElementById('stopBtn');
@@ -50,10 +70,20 @@ class TableTennisReactionApp {
             });
         });
 
+        // Mode selection
+        this.modeButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.selectMode(e.target.closest('.mode-btn').dataset.mode);
+            });
+        });
+
+        // Back to timer button
+        this.backToTimerBtn.addEventListener('click', () => this.backToTimerSelection());
+
         // Control buttons
         this.startBtn.addEventListener('click', () => this.startPractice());
         this.stopBtn.addEventListener('click', () => this.stopPractice());
-        this.backBtn.addEventListener('click', () => this.backToSelection());
+        this.backBtn.addEventListener('click', () => this.backToModeSelection());
     }
 
     initializeAudio() {
@@ -107,12 +137,48 @@ class TableTennisReactionApp {
         this.selectedTime = seconds;
         this.timeRemaining = seconds;
         this.updateTimeDisplay();
+        this.showModeSelection();
+    }
+
+    selectMode(mode) {
+        this.selectedMode = mode;
         this.showPracticeArea();
     }
 
-    showPracticeArea() {
+    showModeSelection() {
         this.timerSelectionDiv.style.display = 'none';
+        this.modeSelectionDiv.style.display = 'block';
+        this.practiceArea.style.display = 'none';
+    }
+
+    backToTimerSelection() {
+        this.modeSelectionDiv.style.display = 'none';
+        this.timerSelectionDiv.style.display = 'block';
+        this.practiceArea.style.display = 'none';
+    }
+
+    backToModeSelection() {
+        this.stopPractice();
+        this.practiceArea.style.display = 'none';
+        this.modeSelectionDiv.style.display = 'block';
+        this.header.style.display = 'block';
+        this.resetStats();
+    }
+
+    showPracticeArea() {
+        this.modeSelectionDiv.style.display = 'none';
         this.practiceArea.style.display = 'block';
+        this.header.style.display = 'none'; // Hide header in practice area
+        
+        // Show appropriate layout based on selected mode
+        if (this.selectedMode === 'basic') {
+            this.basicLayout.style.display = 'flex';
+            this.advancedLayout.style.display = 'none';
+        } else {
+            this.basicLayout.style.display = 'none';
+            this.advancedLayout.style.display = 'flex';
+        }
+        
         this.statusText.textContent = 'Ready?';
         this.statusText.style.display = 'block';
         this.clearBoxHighlights();
@@ -129,6 +195,7 @@ class TableTennisReactionApp {
         this.stopPractice();
         this.practiceArea.style.display = 'none';
         this.timerSelectionDiv.style.display = 'block';
+        this.header.style.display = 'block';
         this.resetStats();
     }
 
@@ -303,8 +370,14 @@ class TableTennisReactionApp {
         }
         this.lastCallTime = currentTime;
         
-        // Generate random direction
-        const directions = ['left', 'right'];
+        // Generate random direction based on mode
+        let directions;
+        if (this.selectedMode === 'basic') {
+            directions = ['left', 'right'];
+        } else {
+            directions = ['left', 'right', 'left-forward', 'right-forward'];
+        }
+        
         const randomDirection = directions[Math.floor(Math.random() * directions.length)];
         
         // Clear previous highlights
@@ -330,19 +403,41 @@ class TableTennisReactionApp {
     }
 
     highlightBox(direction) {
-        // Highlight the appropriate box and play sound
-        if (direction === 'left') {
-            this.leftBox.classList.add('active');
-            this.playBeep(800, 150); // Higher pitch for left
+        // Highlight the appropriate box and play sound based on mode and direction
+        if (this.selectedMode === 'basic') {
+            if (direction === 'left') {
+                this.leftBox.classList.add('active');
+                this.playBeep(800, 150); // Higher pitch for left
+            } else if (direction === 'right') {
+                this.rightBox.classList.add('active');
+                this.playBeep(400, 150); // Lower pitch for right
+            }
         } else {
-            this.rightBox.classList.add('active');
-            this.playBeep(400, 150); // Lower pitch for right
+            // Advanced mode
+            if (direction === 'left') {
+                this.leftBoxAdv.classList.add('active');
+                this.playBeep(800, 150); // Higher pitch for left
+            } else if (direction === 'right') {
+                this.rightBoxAdv.classList.add('active');
+                this.playBeep(400, 150); // Lower pitch for right
+            } else if (direction === 'left-forward') {
+                this.leftForwardBox.classList.add('active');
+                this.playBeep(1000, 150); // Even higher pitch for forward left
+            } else if (direction === 'right-forward') {
+                this.rightForwardBox.classList.add('active');
+                this.playBeep(300, 150); // Lower pitch for forward right
+            }
         }
     }
 
     clearBoxHighlights() {
-        this.leftBox.classList.remove('active');
-        this.rightBox.classList.remove('active');
+        // Clear highlights for both modes
+        if (this.leftBox) this.leftBox.classList.remove('active');
+        if (this.rightBox) this.rightBox.classList.remove('active');
+        if (this.leftBoxAdv) this.leftBoxAdv.classList.remove('active');
+        if (this.rightBoxAdv) this.rightBoxAdv.classList.remove('active');
+        if (this.leftForwardBox) this.leftForwardBox.classList.remove('active');
+        if (this.rightForwardBox) this.rightForwardBox.classList.remove('active');
     }
 
     updateTimeDisplay() {
@@ -404,9 +499,15 @@ document.addEventListener('keydown', (e) => {
     
     // Escape to go back
     if (e.code === 'Escape') {
+        const practiceArea = document.getElementById('practiceArea');
+        const modeSelection = document.getElementById('modeSelection');
         const backBtn = document.getElementById('backBtn');
-        if (backBtn.style.display !== 'none') {
+        const backToTimerBtn = document.getElementById('backToTimerBtn');
+        
+        if (practiceArea.style.display !== 'none' && backBtn) {
             backBtn.click();
+        } else if (modeSelection.style.display !== 'none' && backToTimerBtn) {
+            backToTimerBtn.click();
         }
     }
     
@@ -419,5 +520,13 @@ document.addEventListener('keydown', (e) => {
     }
     if (e.code === 'Digit3') {
         document.querySelector('[data-time="180"]')?.click();
+    }
+    
+    // Mode selection shortcuts (B for Basic, A for Advanced)
+    if (e.code === 'KeyB') {
+        document.querySelector('[data-mode="basic"]')?.click();
+    }
+    if (e.code === 'KeyA') {
+        document.querySelector('[data-mode="advanced"]')?.click();
     }
 });
