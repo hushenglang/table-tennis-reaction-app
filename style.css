@@ -43,33 +43,43 @@ header p {
     font-size: 1.8rem;
 }
 
-.timer-buttons {
+.custom-duration {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
 }
 
-.timer-btn {
-    background: linear-gradient(135deg, #3498db, #2980b9);
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
+.custom-duration label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.duration-input {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #3498db;
     border-radius: 15px;
+    padding: 1rem 1.5rem;
     font-size: 1.2rem;
     font-weight: 600;
-    cursor: pointer;
+    text-align: center;
+    width: 120px;
+    color: #2c3e50;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
 }
 
-.timer-btn:hover {
-    transform: translateY(-3px);
+.duration-input:focus {
+    outline: none;
+    border-color: #2980b9;
     box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+    transform: translateY(-2px);
 }
 
-.timer-btn:active {
-    transform: translateY(-1px);
+.duration-input:hover {
+    border-color: #2980b9;
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
 }
 
 .practice-area {
@@ -500,11 +510,7 @@ header p {
     margin-top: 0.5rem;
 }
 
-.timer-btn.selected {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
-}
+
 
 .mode-btn.selected {
     background: linear-gradient(135deg, #e74c3c, #c0392b);
@@ -655,28 +661,23 @@ header p {
         margin-bottom: 1.2rem;
     }
     
-    .timer-buttons {
-        flex-direction: column;
-        align-items: center;
+    .custom-duration {
         gap: 0.8rem;
     }
     
-    .timer-btn {
-        width: 100%;
-        max-width: 280px;
-        padding: 1.2rem 2rem;
+    .duration-input {
+        width: 100px;
+        padding: 1rem 1.2rem;
         font-size: 1.1rem;
-        font-weight: 600;
         border-radius: 16px;
-        min-height: 56px;
         -webkit-tap-highlight-color: transparent;
         touch-action: manipulation;
         user-select: none;
     }
     
-    .timer-btn:active {
-        transform: translateY(2px) scale(0.98);
-        transition: all 0.1s ease;
+    .duration-input:focus {
+        transform: translateY(-1px) scale(1.02);
+        transition: all 0.2s ease;
     }
     
     .direction-display {
@@ -884,14 +885,13 @@ header p {
         font-size: 2.5rem;
     }
     
-    .timer-buttons {
-        flex-direction: column;
-        align-items: center;
+    .custom-duration {
+        gap: 1rem;
     }
     
-    .timer-btn {
-        width: 100%;
-        max-width: 300px;
+    .duration-input {
+        width: 120px;
+        max-width: 280px;
     }
     
     .control-buttons {
@@ -977,17 +977,14 @@ header p {
         margin-bottom: 0.8rem;
     }
     
-    .timer-buttons {
+    .custom-duration {
         gap: 0.5rem;
-        flex-direction: row;
-        justify-content: center;
     }
     
-    .timer-btn {
-        max-width: 75px;
-        padding: 0.8rem 0.8rem;
+    .duration-input {
+        width: 80px;
+        padding: 0.8rem;
         font-size: 0.95rem;
-        flex: 1;
     }
     
     .mode-buttons {
@@ -1065,9 +1062,9 @@ header p {
         max-width: 400px;
     }
     
-    .timer-btn {
-        max-width: 300px;
-        padding: 1.3rem 2.2rem;
+    .duration-input {
+        width: 110px;
+        padding: 1.1rem 1.3rem;
     }
     
     /* Advanced layout for iPhone Pro Max */
