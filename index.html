@@ -30,18 +30,53 @@
 </head>
 <body>
     <div class="container">
-        <header>
+        <header id="header">
             <h1>🏓 Table Tennis Reaction Practice</h1>
             <p>Train your reflexes with random direction calls</p>
         </header>
 
         <main>
-            <div class="timer-selection">
-                <h2>Select Practice Duration</h2>
-                <div class="timer-buttons">
-                    <button class="timer-btn" data-time="60">1min</button>
-                    <button class="timer-btn" data-time="120">2min</button>
-                    <button class="timer-btn" data-time="180">3min</button>
+            <div class="selection-page" id="selectionPage">
+                <div class="duration-section">
+                    <h2>Practice Duration</h2>
+                    <div class="timer-buttons">
+                        <button class="timer-btn" data-time="60">1min</button>
+                        <button class="timer-btn" data-time="120">2min</button>
+                        <button class="timer-btn" data-time="180">3min</button>
+                    </div>
+                </div>
+
+                <div class="mode-section">
+                    <h2>Practice Mode</h2>
+                    <div class="mode-buttons">
+                        <button class="mode-btn" data-mode="basic">
+                            <div class="mode-title">Basic Mode</div>
+                            <div class="mode-description">Left & Right only</div>
+                            <div class="mode-visual">
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                            </div>
+                        </button>
+                        <button class="mode-btn" data-mode="advanced">
+                            <div class="mode-title">Advanced Mode</div>
+                            <div class="mode-description">4 directions with forward shots</div>
+                            <div class="mode-visual">
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="start-section">
+                    <button class="start-practice-btn" id="startPracticeBtn" disabled>
+                        Start Practice
+                    </button>
+                    <div class="selection-status" id="selectionStatus">
+                        Select duration and mode to start
+                    </div>
                 </div>
             </div>
 
@@ -51,14 +86,31 @@
                 </div>
                 
                 <div class="direction-display" id="directionDisplay">
-                    <div class="box left-box" id="leftBox">L</div>
-                    <div class="box right-box" id="rightBox">R</div>
+                    <!-- Basic Mode Layout -->
+                    <div class="basic-layout" id="basicLayout">
+                        <div class="box left-box" id="leftBox">L</div>
+                        <div class="box right-box" id="rightBox">R</div>
+                    </div>
+                    
+                    <!-- Advanced Mode Layout -->
+                    <div class="advanced-layout" id="advancedLayout" style="display: none;">
+                        <div class="box-row back-row">
+                            <div class="box left-forward-box" id="leftForwardBox">LF</div>
+                            <div class="box right-forward-box" id="rightForwardBox">RF</div>
+                        </div>
+                        <div class="box-row front-row">
+                            <div class="box left-box" id="leftBoxAdv">L</div>
+                            <div class="box right-box" id="rightBoxAdv">R</div>
+                        </div>
+                    </div>
+                    
                     <div class="status-text" id="statusText">Ready?</div>
                 </div>
 
                 <div class="control-buttons">
                     <button id="startBtn" class="control-btn start">Start</button>
-                    <button id="stopBtn" class="control-btn stop" style="display: none;">Stop</button>
+                    <button id="pauseBtn" class="control-btn pause" style="display: none;">Pause</button>
+                    <button id="resumeBtn" class="control-btn resume" style="display: none;">Resume</button>
                     <button id="backBtn" class="control-btn back">Back</button>
                 </div>
 
