@@ -39,10 +39,32 @@
             <div class="selection-page" id="selectionPage">
                 <div class="duration-section">
                     <h2>Practice Duration</h2>
-                    <div class="timer-buttons">
-                        <button class="timer-btn" data-time="60">1min</button>
-                        <button class="timer-btn" data-time="120">2min</button>
-                        <button class="timer-btn" data-time="180">3min</button>
+                    <div class="duration-controls">
+                        <div class="preset-timers">
+                            <button class="timer-btn" data-time="30">30s</button>
+                            <button class="timer-btn" data-time="60">1min</button>
+                            <button class="timer-btn" data-time="90">1.5min</button>
+                            <button class="timer-btn" data-time="180">3min</button>
+                            <button class="timer-btn" data-time="300">5min</button>
+                        </div>
+                        <div class="custom-duration-section">
+                            <h3>Custom Duration</h3>
+                            <div class="custom-duration">
+                                <button class="stepper-btn minus-btn" id="minutesMinus">−</button>
+                                <div class="time-display">
+                                    <span id="customTimeDisplay">2:00</span>
+                                    <input type="range" id="customMinutesSlider" min="0.5" max="10" value="2" step="0.5" class="time-slider">
+                                </div>
+                                <button class="stepper-btn plus-btn" id="minutesPlus">+</button>
+                            </div>
+                            <div class="quick-adjust">
+                                <button class="quick-btn" data-minutes="0.5">30s</button>
+                                <button class="quick-btn" data-minutes="1">1m</button>
+                                <button class="quick-btn" data-minutes="2">2m</button>
+                                <button class="quick-btn" data-minutes="3">3m</button>
+                                <button class="quick-btn" data-minutes="5">5m</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
