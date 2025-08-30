@@ -31,6 +31,8 @@ class TableTennisReactionApp {
         // Combined selection page elements
         this.selectionPage = document.getElementById('selectionPage');
         this.durationInput = document.getElementById('durationInput');
+        this.decreaseBtn = document.getElementById('decreaseBtn');
+        this.increaseBtn = document.getElementById('increaseBtn');
         this.modeButtons = document.querySelectorAll('.mode-btn');
         this.startPracticeBtn = document.getElementById('startPracticeBtn');
         this.selectionStatus = document.getElementById('selectionStatus');
@@ -64,7 +66,10 @@ class TableTennisReactionApp {
     }
 
     bindEvents() {
-        // Duration input
+        // Duration controls
+        this.decreaseBtn.addEventListener('click', () => this.adjustDuration(-0.5));
+        this.increaseBtn.addEventListener('click', () => this.adjustDuration(0.5));
+        
         this.durationInput.addEventListener('input', (e) => {
             this.selectTimer(parseFloat(e.target.value) * 60); // Convert minutes to seconds
         });
@@ -130,6 +135,13 @@ class TableTennisReactionApp {
         } catch (e) {
             console.warn('Error playing beep:', e);
         }
+    }
+
+    adjustDuration(change) {
+        const currentValue = parseFloat(this.durationInput.value);
+        const newValue = Math.max(0.5, Math.min(10, currentValue + change));
+        this.durationInput.value = newValue;
+        this.selectTimer(newValue * 60);
     }
 
     selectTimer(seconds) {
@@ -605,23 +617,39 @@ document.addEventListener('keydown', (e) => {
     // Number keys for duration input
     if (e.code === 'Digit1') {
         const durationInput = document.getElementById('durationInput');
-        if (durationInput) {
+        if (durationInput && document.getElementById('selectionPage').style.display !== 'none') {
             durationInput.value = '1';
             durationInput.dispatchEvent(new Event('input'));
         }
     }
     if (e.code === 'Digit2') {
         const durationInput = document.getElementById('durationInput');
-        if (durationInput) {
+        if (durationInput && document.getElementById('selectionPage').style.display !== 'none') {
             durationInput.value = '2';
             durationInput.dispatchEvent(new Event('input'));
         }
     }
     if (e.code === 'Digit3') {
         const durationInput = document.getElementById('durationInput');
-        if (durationInput) {
+        if (durationInput && document.getElementById('selectionPage').style.display !== 'none') {
             durationInput.value = '3';
             durationInput.dispatchEvent(new Event('input'));
+        }
+    }
+    
+    // Plus/Minus keys for duration adjustment
+    if (e.code === 'Equal' || e.code === 'NumpadAdd') {
+        e.preventDefault();
+        const increaseBtn = document.getElementById('increaseBtn');
+        if (increaseBtn && document.getElementById('selectionPage').style.display !== 'none') {
+            increaseBtn.click();
+        }
+    }
+    if (e.code === 'Minus' || e.code === 'NumpadSubtract') {
+        e.preventDefault();
+        const decreaseBtn = document.getElementById('decreaseBtn');
+        if (decreaseBtn && document.getElementById('selectionPage').style.display !== 'none') {
+            decreaseBtn.click();
         }
     }
     

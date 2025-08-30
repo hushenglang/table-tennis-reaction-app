@@ -56,30 +56,59 @@ header p {
     color: #2c3e50;
 }
 
-.duration-input {
-    background: rgba(255, 255, 255, 0.9);
-    border: 2px solid #3498db;
+.duration-controls {
+    display: flex;
+    align-items: center;
+    gap: 0;
     border-radius: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+    overflow: hidden;
+    border: 2px solid #3498db;
+}
+
+.duration-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
     padding: 1rem 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 50px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.duration-btn:hover {
+    background: linear-gradient(135deg, #2980b9, #1f618d);
+}
+
+.duration-btn:active {
+    transform: scale(0.95);
+    background: linear-gradient(135deg, #1f618d, #154360);
+}
+
+.duration-input {
+    background: transparent;
+    border: none;
+    padding: 1rem;
     font-size: 1.2rem;
     font-weight: 600;
     text-align: center;
-    width: 120px;
+    width: 80px;
     color: #2c3e50;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+    outline: none;
+    cursor: default;
 }
 
 .duration-input:focus {
     outline: none;
-    border-color: #2980b9;
-    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
-    transform: translateY(-2px);
-}
-
-.duration-input:hover {
-    border-color: #2980b9;
-    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
 }
 
 .practice-area {
@@ -507,7 +536,7 @@ header p {
 .selection-status {
     color: #7f8c8d;
     font-size: 1rem;
-    margin-top: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 
@@ -665,19 +694,30 @@ header p {
         gap: 0.8rem;
     }
     
-    .duration-input {
-        width: 100px;
-        padding: 1rem 1.2rem;
-        font-size: 1.1rem;
+    .duration-controls {
         border-radius: 16px;
+        height: 56px;
+    }
+    
+    .duration-btn {
+        padding: 0.8rem 1.2rem;
+        font-size: 1.3rem;
+        min-width: 48px;
+        height: 56px;
         -webkit-tap-highlight-color: transparent;
         touch-action: manipulation;
         user-select: none;
     }
     
-    .duration-input:focus {
-        transform: translateY(-1px) scale(1.02);
-        transition: all 0.2s ease;
+    .duration-input {
+        width: 80px;
+        padding: 0.8rem;
+        font-size: 1.1rem;
+    }
+    
+    .duration-btn:active {
+        transform: scale(0.92);
+        transition: all 0.1s ease;
     }
     
     .direction-display {
@@ -889,9 +929,22 @@ header p {
         gap: 1rem;
     }
     
+    .duration-controls {
+        border-radius: 15px;
+        height: 56px;
+    }
+    
+    .duration-btn {
+        padding: 0.9rem 1.3rem;
+        font-size: 1.3rem;
+        min-width: 50px;
+        height: 56px;
+    }
+    
     .duration-input {
-        width: 120px;
-        max-width: 280px;
+        width: 100px;
+        padding: 0.9rem;
+        font-size: 1.1rem;
     }
     
     .control-buttons {
@@ -981,10 +1034,27 @@ header p {
         gap: 0.5rem;
     }
     
+    .duration-controls {
+        border-radius: 14px;
+        height: 48px;
+    }
+    
+    .duration-btn {
+        padding: 0.6rem 1rem;
+        font-size: 1.2rem;
+        min-width: 44px;
+        height: 48px;
+    }
+    
     .duration-input {
-        width: 80px;
-        padding: 0.8rem;
+        width: 70px;
+        padding: 0.6rem;
         font-size: 0.95rem;
+    }
+    
+    .selection-status {
+        font-size: 0.9rem;
+        margin-bottom: 0.8rem;
     }
     
     .mode-buttons {
@@ -1062,9 +1132,22 @@ header p {
         max-width: 400px;
     }
     
+    .duration-controls {
+        border-radius: 16px;
+        height: 60px;
+    }
+    
+    .duration-btn {
+        padding: 1rem 1.3rem;
+        font-size: 1.4rem;
+        min-width: 52px;
+        height: 60px;
+    }
+    
     .duration-input {
-        width: 110px;
-        padding: 1.1rem 1.3rem;
+        width: 90px;
+        padding: 1rem;
+        font-size: 1.1rem;
     }
     
     /* Advanced layout for iPhone Pro Max */
