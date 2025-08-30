@@ -1,9 +1,10 @@
 class TableTennisReactionApp {
     constructor() {
         this.selectedTime = 0;
-        this.selectedMode = 'basic';
+        this.selectedMode = null;
         this.timeRemaining = 0;
         this.isRunning = false;
+        this.isPaused = false;
         this.isCountingDown = false;
         this.countdownValue = 0;
         this.countdownInterval = null;
@@ -15,6 +16,7 @@ class TableTennisReactionApp {
         this.lastCallTime = 0;
         this.lastDirection = null;
         this.audioContext = null;
+        this.pausedTime = 0; // Track time when paused
         
         this.initializeElements();
         this.bindEvents();
@@ -25,14 +27,12 @@ class TableTennisReactionApp {
         // Header
         this.header = document.getElementById('header');
         
-        // Timer selection elements
+        // Combined selection page elements
+        this.selectionPage = document.getElementById('selectionPage');
         this.timerButtons = document.querySelectorAll('.timer-btn');
-        this.timerSelectionDiv = document.querySelector('.timer-selection');
-        
-        // Mode selection elements
-        this.modeSelectionDiv = document.getElementById('modeSelection');
         this.modeButtons = document.querySelectorAll('.mode-btn');
-        this.backToTimerBtn = document.getElementById('backToTimerBtn');
+        this.startPracticeBtn = document.getElementById('startPracticeBtn');
+        this.selectionStatus = document.getElementById('selectionStatus');
         
         // Practice area elements
         this.practiceArea = document.getElementById('practiceArea');
@@ -53,7 +53,8 @@ class TableTennisReactionApp {
         
         this.statusText = document.getElementById('statusText');
         this.startBtn = document.getElementById('startBtn');
-        this.stopBtn = document.getElementById('stopBtn');
+        this.pauseBtn = document.getElementById('pauseBtn');
+        this.resumeBtn = document.getElementById('resumeBtn');
         this.backBtn = document.getElementById('backBtn');
         
         // Stats elements
@@ -77,13 +78,14 @@ class TableTennisReactionApp {
             });
         });
 
-        // Back to timer button
-        this.backToTimerBtn.addEventListener('click', () => this.backToTimerSelection());
+        // Start practice button
+        this.startPracticeBtn.addEventListener('click', () => this.showPracticeArea());
 
         // Control buttons
         this.startBtn.addEventListener('click', () => this.startPractice());
-        this.stopBtn.addEventListener('click', () => this.stopPractice());
-        this.backBtn.addEventListener('click', () => this.backToModeSelection());
+        this.pauseBtn.addEventListener('click', () => this.pausePractice());
+        this.resumeBtn.addEventListener('click', () => this.resumePractice());
+        this.backBtn.addEventListener('click', () => this.backToSelection());
     }
 
     initializeAudio() {
@@ -137,36 +139,42 @@ class TableTennisReactionApp {
         this.selectedTime = seconds;
         this.timeRemaining = seconds;
         this.updateTimeDisplay();
-        this.showModeSelection();
+        
+        // Update button selection state
+        this.timerButtons.forEach(btn => btn.classList.remove('selected'));
+        event.target.classList.add('selected');
+        
+        this.updateStartButton();
     }
 
     selectMode(mode) {
         this.selectedMode = mode;
-        this.showPracticeArea();
+        
+        // Update button selection state
+        this.modeButtons.forEach(btn => btn.classList.remove('selected'));
+        event.target.closest('.mode-btn').classList.add('selected');
+        
+        this.updateStartButton();
     }
 
-    showModeSelection() {
-        this.timerSelectionDiv.style.display = 'none';
-        this.modeSelectionDiv.style.display = 'block';
-        this.practiceArea.style.display = 'none';
-    }
-
-    backToTimerSelection() {
-        this.modeSelectionDiv.style.display = 'none';
-        this.timerSelectionDiv.style.display = 'block';
-        this.practiceArea.style.display = 'none';
-    }
-
-    backToModeSelection() {
-        this.stopPractice();
-        this.practiceArea.style.display = 'none';
-        this.modeSelectionDiv.style.display = 'block';
-        this.header.style.display = 'block';
-        this.resetStats();
+    updateStartButton() {
+        if (this.selectedTime > 0 && this.selectedMode) {
+            this.startPracticeBtn.disabled = false;
+            this.selectionStatus.textContent = `${this.selectedTime/60}min ${this.selectedMode} mode - Ready to start!`;
+        } else {
+            this.startPracticeBtn.disabled = true;
+            if (!this.selectedTime && !this.selectedMode) {
+                this.selectionStatus.textContent = 'Select duration and mode to start';
+            } else if (!this.selectedTime) {
+                this.selectionStatus.textContent = 'Select practice duration';
+            } else {
+                this.selectionStatus.textContent = 'Select practice mode';
+            }
+        }
     }
 
     showPracticeArea() {
-        this.modeSelectionDiv.style.display = 'none';
+        this.selectionPage.style.display = 'none';
         this.practiceArea.style.display = 'block';
         this.header.style.display = 'none'; // Hide header in practice area
         
@@ -194,7 +202,7 @@ class TableTennisReactionApp {
     backToSelection() {
         this.stopPractice();
         this.practiceArea.style.display = 'none';
-        this.timerSelectionDiv.style.display = 'block';
+        this.selectionPage.style.display = 'block';
         this.header.style.display = 'block';
         this.resetStats();
     }
@@ -208,7 +216,8 @@ class TableTennisReactionApp {
         this.isCountingDown = true;
         this.countdownValue = 3;
         this.startBtn.style.display = 'none';
-        this.stopBtn.style.display = 'inline-block';
+        this.pauseBtn.style.display = 'inline-block';
+        this.resumeBtn.style.display = 'none';
         this.statsDiv.style.display = 'none';
         
         // Show countdown in status text
@@ -277,13 +286,112 @@ class TableTennisReactionApp {
         this.showDirection();
     }
 
-    stopPractice() {
+    pausePractice() {
         if (!this.isRunning && !this.isCountingDown) return;
+        
+        this.isPaused = true;
+        this.isRunning = false;
+        this.isCountingDown = false;
+        
+        this.pauseBtn.style.display = 'none';
+        this.resumeBtn.style.display = 'inline-block';
+        
+        // Clear all intervals and timeouts but preserve state
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+        if (this.directionTimeout) {
+            clearTimeout(this.directionTimeout);
+            this.directionTimeout = null;
+        }
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+        }
+        
+        // Show pause status
+        this.statusText.textContent = 'Paused';
+        this.statusText.style.display = 'block';
+        this.statusText.classList.remove('countdown');
+        this.clearBoxHighlights();
+    }
+
+    resumePractice() {
+        if (!this.isPaused) return;
+        
+        this.isPaused = false;
+        this.resumeBtn.style.display = 'none';
+        this.pauseBtn.style.display = 'inline-block';
+        
+        // Resume with countdown
+        this.isCountingDown = true;
+        this.countdownValue = 3;
+        
+        // Show countdown in status text
+        this.statusText.style.display = 'block';
+        this.statusText.textContent = this.countdownValue.toString();
+        this.statusText.classList.add('countdown');
+        
+        // Play initial countdown beep for "3"
+        this.playBeep(600, 200);
+        
+        // Start countdown
+        this.countdownInterval = setInterval(() => {
+            this.countdownValue--;
+            
+            if (this.countdownValue > 0) {
+                this.statusText.textContent = this.countdownValue.toString();
+                this.playBeep(600, 200);
+            } else {
+                // Countdown finished, resume the actual practice
+                this.statusText.textContent = 'GO!';
+                this.statusText.classList.remove('countdown');
+                this.playBeep(1000, 300);
+                
+                clearInterval(this.countdownInterval);
+                this.countdownInterval = null;
+                this.isCountingDown = false;
+                
+                setTimeout(() => {
+                    this.resumeActualPractice();
+                }, 500);
+            }
+        }, 1000);
+    }
+
+    resumeActualPractice() {
+        this.isRunning = true;
+        
+        // Update last call time to current time to avoid timing issues
+        this.lastCallTime = Date.now();
+        
+        // Hide the status text
+        this.statusText.style.display = 'none';
+        
+        // Resume the main timer
+        this.timerInterval = setInterval(() => {
+            this.timeRemaining--;
+            this.updateTimeDisplay();
+            
+            if (this.timeRemaining <= 0) {
+                this.endPractice();
+            }
+        }, 1000);
+
+        // Resume direction calling
+        this.scheduleNextDirection();
+    }
+
+    stopPractice() {
+        if (!this.isRunning && !this.isCountingDown && !this.isPaused) return;
         
         this.isRunning = false;
         this.isCountingDown = false;
+        this.isPaused = false;
         this.startBtn.style.display = 'inline-block';
-        this.stopBtn.style.display = 'none';
+        this.pauseBtn.style.display = 'none';
+        this.resumeBtn.style.display = 'none';
         
         // Clear all intervals and timeouts
         if (this.timerInterval) {
@@ -316,8 +424,10 @@ class TableTennisReactionApp {
 
     endPractice() {
         this.isRunning = false;
+        this.isPaused = false;
         this.startBtn.style.display = 'inline-block';
-        this.stopBtn.style.display = 'none';
+        this.pauseBtn.style.display = 'none';
+        this.resumeBtn.style.display = 'none';
         
         // Clear intervals
         if (this.timerInterval) {
@@ -473,6 +583,7 @@ class TableTennisReactionApp {
         this.totalCalls = 0;
         this.intervals = [];
         this.lastDirection = null;
+        this.isPaused = false;
         this.statsDiv.style.display = 'none';
     }
 }
@@ -484,30 +595,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Add some keyboard shortcuts for better UX
 document.addEventListener('keydown', (e) => {
-    // Space bar to start/stop
+    // Space bar to start/pause/resume
     if (e.code === 'Space') {
         e.preventDefault();
         const startBtn = document.getElementById('startBtn');
-        const stopBtn = document.getElementById('stopBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resumeBtn = document.getElementById('resumeBtn');
+        const startPracticeBtn = document.getElementById('startPracticeBtn');
         
         if (startBtn.style.display !== 'none') {
             startBtn.click();
-        } else if (stopBtn.style.display !== 'none') {
-            stopBtn.click();
+        } else if (pauseBtn.style.display !== 'none') {
+            pauseBtn.click();
+        } else if (resumeBtn.style.display !== 'none') {
+            resumeBtn.click();
+        } else if (startPracticeBtn && !startPracticeBtn.disabled) {
+            startPracticeBtn.click();
         }
     }
     
     // Escape to go back
     if (e.code === 'Escape') {
         const practiceArea = document.getElementById('practiceArea');
-        const modeSelection = document.getElementById('modeSelection');
         const backBtn = document.getElementById('backBtn');
-        const backToTimerBtn = document.getElementById('backToTimerBtn');
         
         if (practiceArea.style.display !== 'none' && backBtn) {
             backBtn.click();
-        } else if (modeSelection.style.display !== 'none' && backToTimerBtn) {
-            backToTimerBtn.click();
         }
     }
     

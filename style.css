@@ -388,10 +388,16 @@ header p {
     box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
 }
 
-.control-btn.stop {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
+.control-btn.pause {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
     color: white;
-    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+    box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+}
+
+.control-btn.resume {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
 }
 
 .control-btn.back {
@@ -439,15 +445,71 @@ header p {
     font-weight: 700;
 }
 
-/* Mode Selection Styles */
-.mode-selection {
+/* Combined Selection Page Styles */
+.selection-page {
     animation: fadeIn 0.5s ease-in;
 }
 
-.mode-selection h2 {
+.duration-section, .mode-section {
+    margin-bottom: 2.5rem;
+}
+
+.duration-section h2, .mode-section h2 {
     color: #2c3e50;
     margin-bottom: 1.5rem;
     font-size: 1.8rem;
+}
+
+.start-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid rgba(108, 117, 125, 0.2);
+}
+
+.start-practice-btn {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    border: none;
+    padding: 1.2rem 3rem;
+    border-radius: 15px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
+    margin-bottom: 1rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.start-practice-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(46, 204, 113, 0.4);
+}
+
+.start-practice-btn:disabled {
+    background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 5px 15px rgba(189, 195, 199, 0.3);
+}
+
+.selection-status {
+    color: #7f8c8d;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+.timer-btn.selected {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+}
+
+.mode-btn.selected {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
 }
 
 .mode-buttons {
@@ -505,23 +567,7 @@ header p {
     border-radius: 50%;
 }
 
-.back-btn {
-    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(149, 165, 166, 0.3);
-}
-
-.back-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(149, 165, 166, 0.4);
-}
+/* Remove old back-btn styles as they're no longer needed */
 
 /* Advanced Mode Layout */
 .basic-layout {
@@ -728,7 +774,16 @@ header p {
         margin-bottom: 0.4rem;
     }
     
-    /* Mode selection mobile styles */
+    /* Combined selection page mobile styles */
+    .duration-section, .mode-section {
+        margin-bottom: 2rem;
+    }
+    
+    .duration-section h2, .mode-section h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1.2rem;
+    }
+    
     .mode-buttons {
         flex-direction: column;
         align-items: center;
@@ -747,6 +802,17 @@ header p {
     
     .mode-description {
         font-size: 0.85rem;
+    }
+    
+    .start-practice-btn {
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+        max-width: 280px;
+    }
+    
+    .start-section {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
     }
     
     /* Advanced layout mobile optimization */
@@ -838,7 +904,7 @@ header p {
         max-width: 200px;
     }
     
-    /* Mode selection for standard mobile */
+    /* Combined selection page for standard mobile */
     .mode-buttons {
         flex-direction: column;
         align-items: center;
@@ -847,6 +913,10 @@ header p {
     
     .mode-btn {
         width: 100%;
+        max-width: 300px;
+    }
+    
+    .start-practice-btn {
         max-width: 300px;
     }
     
