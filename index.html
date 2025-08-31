@@ -31,14 +31,14 @@
 <body>
     <div class="container">
         <header id="header">
-            <h1>🏓 Table Tennis Reaction Practice</h1>
-            <p>Train your reflexes with random direction calls</p>
+            <h1 data-i18n="title">🏓 Table Tennis Reaction Practice</h1>
+            <p data-i18n="subtitle">Train your reflexes with random direction calls</p>
         </header>
 
         <main>
             <div class="selection-page" id="selectionPage">
                 <div class="duration-section">
-                    <h2>Practice Duration</h2>
+                    <h2 data-i18n="duration">Practice Duration</h2>
                     <div class="custom-duration">
                         <div class="duration-controls">
                             <button type="button" class="duration-btn decrease" id="decreaseBtn">−</button>
@@ -50,19 +50,19 @@
                 </div>
 
                 <div class="mode-section">
-                    <h2>Practice Mode</h2>
+                    <h2 data-i18n="mode">Practice Mode</h2>
                     <div class="mode-buttons">
                         <button class="mode-btn selected" data-mode="basic">
-                            <div class="mode-title">Basic Mode</div>
-                            <div class="mode-description">Left & Right only</div>
+                            <div class="mode-title" data-i18n="basicMode">Basic Mode</div>
+                            <div class="mode-description" data-i18n="basicDesc">Left & Right only</div>
                             <div class="mode-visual">
                                 <span class="dot"></span>
                                 <span class="dot"></span>
                             </div>
                         </button>
                         <button class="mode-btn" data-mode="advanced">
-                            <div class="mode-title">Advanced Mode</div>
-                            <div class="mode-description">4 directions with forward shots</div>
+                            <div class="mode-title" data-i18n="advancedMode">Advanced Mode</div>
+                            <div class="mode-description" data-i18n="advancedDesc">4 directions with forward shots</div>
                             <div class="mode-visual">
                                 <span class="dot"></span>
                                 <span class="dot"></span>
@@ -77,7 +77,7 @@
                     <div class="selection-status" id="selectionStatus">
                         1min basic mode - Ready to start!
                     </div>
-                    <button class="start-practice-btn" id="startPracticeBtn">
+                    <button class="start-practice-btn" id="startPracticeBtn" data-i18n="startPractice">
                         Start Practice
                     </button>
                 </div>
@@ -107,19 +107,19 @@
                         </div>
                     </div>
                     
-                    <div class="status-text" id="statusText">Ready?</div>
+                    <div class="status-text" id="statusText" data-i18n="ready">Ready?</div>
                 </div>
 
                 <div class="control-buttons">
-                    <button id="pauseBtn" class="control-btn pause" style="display: none;">Pause</button>
-                    <button id="resumeBtn" class="control-btn resume" style="display: none;">Resume</button>
-                    <button id="backBtn" class="control-btn back">Back</button>
+                    <button id="pauseBtn" class="control-btn pause" style="display: none;" data-i18n="pause">Pause</button>
+                    <button id="resumeBtn" class="control-btn resume" style="display: none;" data-i18n="resume">Resume</button>
+                    <button id="backBtn" class="control-btn back" data-i18n="back">Back</button>
                 </div>
 
                 <div class="stats" id="stats" style="display: none;">
-                    <h3>Practice Complete!</h3>
-                    <p>Total directions called: <span id="totalCalls">0</span></p>
-                    <p>Average interval: <span id="avgInterval">0</span>s</p>
+                    <h3 data-i18n="complete">Practice Complete!</h3>
+                    <p><span data-i18n="totalCallsLabel">Total directions called:</span> <span id="totalCalls">0</span></p>
+                    <p><span data-i18n="avgIntervalLabel">Average interval:</span> <span id="avgInterval">0</span><span data-i18n="secondsSuffix">s</span></p>
                 </div>
             </div>
         </main>
