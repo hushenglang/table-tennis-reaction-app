@@ -25,6 +25,21 @@ body {
     backdrop-filter: blur(10px);
 }
 
+header {
+    position: relative;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.header-text {
+    flex: 1;
+}
+
 header h1 {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
@@ -35,6 +50,32 @@ header p {
     color: #7f8c8d;
     font-size: 1.1rem;
     margin-bottom: 2rem;
+}
+
+.history-icon-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-top: 0.5rem;
+}
+
+.history-icon-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.history-icon-btn:active {
+    transform: translateY(0);
 }
 
 .timer-selection h2 {
@@ -531,25 +572,50 @@ header p {
     margin-bottom: 1rem;
 }
 
-/* History Section Styles */
-.history-section {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 2px solid rgba(108, 117, 125, 0.2);
+/* History Page Styles */
+.history-page {
+    animation: fadeIn 0.5s ease-in;
 }
 
 .history-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     flex-wrap: wrap;
     gap: 1rem;
 }
 
+.history-title-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.back-to-main-btn {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+}
+
+.back-to-main-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(149, 165, 166, 0.4);
+}
+
 .history-header h2 {
     color: #2c3e50;
-    font-size: 1.8rem;
+    font-size: 2rem;
     margin: 0;
 }
 
@@ -559,31 +625,22 @@ header p {
     flex-wrap: wrap;
 }
 
-.history-toggle-btn, .clear-history-btn {
-    padding: 0.6rem 1.2rem;
+.clear-history-btn {
+    padding: 0.8rem 1.5rem;
     border: none;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    border-radius: 10px;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-}
-
-.history-toggle-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-.clear-history-btn {
     background: linear-gradient(135deg, #e74c3c, #c0392b);
     color: white;
     box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
 }
 
-.history-toggle-btn:hover, .clear-history-btn:hover {
+.clear-history-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 16px rgba(231, 76, 60, 0.4);
 }
 
 .history-content {
@@ -592,17 +649,19 @@ header p {
 
 .overall-stats {
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    border-radius: 15px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(102, 126, 234, 0.1);
 }
 
 .overall-stats h3 {
     color: #2c3e50;
-    margin-bottom: 1rem;
-    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
     text-align: center;
+    font-weight: 700;
 }
 
 .stats-grid {
@@ -633,11 +692,12 @@ header p {
 }
 
 .history-list {
-    max-height: 400px;
+    max-height: 500px;
     overflow-y: auto;
-    border-radius: 15px;
-    background: rgba(255, 255, 255, 0.5);
-    padding: 1rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 1.5rem;
+    border: 2px solid rgba(102, 126, 234, 0.1);
 }
 
 .history-item {
@@ -1151,25 +1211,48 @@ header p {
         max-width: 300px;
     }
     
-    /* History section mobile styles */
+    /* History page mobile styles */
     .history-header {
         flex-direction: column;
         align-items: center;
         text-align: center;
         gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .history-title-section {
+        gap: 0.8rem;
     }
     
     .history-header h2 {
         font-size: 1.6rem;
     }
     
+    .back-to-main-btn {
+        width: 40px;
+        height: 40px;
+        padding: 0.6rem;
+    }
+    
     .history-controls {
         justify-content: center;
     }
     
-    .history-toggle-btn, .clear-history-btn {
+    .clear-history-btn {
         padding: 0.8rem 1.5rem;
         font-size: 0.9rem;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .history-icon-btn {
+        width: 44px;
+        height: 44px;
+        margin-top: 0;
     }
     
     .stats-grid {
@@ -1316,14 +1399,37 @@ header p {
         margin-top: 0.3rem;
     }
     
-    /* History section for iPhone 14/15 Pro */
+    /* History page for iPhone 14/15 Pro */
+    .history-header {
+        margin-bottom: 1.2rem;
+    }
+    
     .history-header h2 {
         font-size: 1.4rem;
     }
     
-    .history-toggle-btn, .clear-history-btn {
+    .back-to-main-btn {
+        width: 36px;
+        height: 36px;
+        padding: 0.5rem;
+    }
+    
+    .clear-history-btn {
         padding: 0.7rem 1.2rem;
         font-size: 0.85rem;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .history-icon-btn {
+        width: 40px;
+        height: 40px;
+        padding: 0.6rem;
+        margin-top: 0;
     }
     
     .stats-grid {

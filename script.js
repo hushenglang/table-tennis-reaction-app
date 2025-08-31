@@ -286,7 +286,9 @@ class TableTennisReactionApp {
         this.selectionStatus = document.getElementById('selectionStatus');
         
         // History elements
-        this.historyToggleBtn = document.getElementById('historyToggleBtn');
+        this.historyIconBtn = document.getElementById('historyIconBtn');
+        this.historyPage = document.getElementById('historyPage');
+        this.backToMainBtn = document.getElementById('backToMainBtn');
         this.clearHistoryBtn = document.getElementById('clearHistoryBtn');
         this.historyContent = document.getElementById('historyContent');
         this.overallStats = document.getElementById('overallStats');
@@ -343,7 +345,8 @@ class TableTennisReactionApp {
         this.startPracticeBtn.addEventListener('click', () => this.showPracticeAreaAndStart());
 
         // History controls
-        this.historyToggleBtn.addEventListener('click', () => this.toggleHistory());
+        this.historyIconBtn.addEventListener('click', () => this.showHistoryPage());
+        this.backToMainBtn.addEventListener('click', () => this.showMainPage());
         this.clearHistoryBtn.addEventListener('click', () => this.clearHistory());
 
         // Control buttons
@@ -511,6 +514,7 @@ class TableTennisReactionApp {
     backToSelection() {
         this.stopPractice();
         this.practiceArea.style.display = 'none';
+        this.historyPage.style.display = 'none';
         this.selectionPage.style.display = 'block';
         this.header.style.display = 'block';
         this.resetStats();
@@ -934,19 +938,17 @@ class TableTennisReactionApp {
         this.statsDiv.style.display = 'none';
     }
 
-    toggleHistory() {
-        const isVisible = this.historyContent.style.display !== 'none';
-        
-        if (isVisible) {
-            this.historyContent.style.display = 'none';
-            this.historyToggleBtn.textContent = translate('viewHistory');
-            this.clearHistoryBtn.style.display = 'none';
-        } else {
-            this.updateHistoryDisplay();
-            this.historyContent.style.display = 'block';
-            this.historyToggleBtn.textContent = translate('hideHistory');
-            this.clearHistoryBtn.style.display = 'inline-block';
-        }
+    showHistoryPage() {
+        this.selectionPage.style.display = 'none';
+        this.historyPage.style.display = 'block';
+        this.header.style.display = 'none';
+        this.updateHistoryDisplay();
+    }
+
+    showMainPage() {
+        this.historyPage.style.display = 'none';
+        this.selectionPage.style.display = 'block';
+        this.header.style.display = 'block';
     }
 
     updateHistoryDisplay() {
@@ -1060,10 +1062,24 @@ document.addEventListener('keydown', (e) => {
     // Escape to go back
     if (e.code === 'Escape') {
         const practiceArea = document.getElementById('practiceArea');
+        const historyPage = document.getElementById('historyPage');
         const backBtn = document.getElementById('backBtn');
+        const backToMainBtn = document.getElementById('backToMainBtn');
         
         if (practiceArea.style.display !== 'none' && backBtn) {
             backBtn.click();
+        } else if (historyPage.style.display !== 'none' && backToMainBtn) {
+            backToMainBtn.click();
+        }
+    }
+    
+    // H key to open history from main page
+    if (e.code === 'KeyH') {
+        const selectionPage = document.getElementById('selectionPage');
+        const historyIconBtn = document.getElementById('historyIconBtn');
+        
+        if (selectionPage.style.display !== 'none' && historyIconBtn) {
+            historyIconBtn.click();
         }
     }
     
