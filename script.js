@@ -47,8 +47,6 @@ const I18N_DICTIONARY = {
 		minutes: 'min',
 		seconds: 'sec',
 		overallStats: 'Overall Statistics',
-		weeklySessions: 'Weekly Total Sessions:',
-		weeklyPracticeTime: 'Weekly Total Practice Time:',
 		totalSessions: 'Total Sessions:',
 		totalPracticeTime: 'Total Practice Time:',
 		totalDirections: 'Total Directions:',
@@ -103,8 +101,6 @@ const I18N_DICTIONARY = {
 		minutes: '分钟',
 		seconds: '秒',
 		overallStats: '总体统计',
-		weeklySessions: '本周总练习次数：',
-		weeklyPracticeTime: '本周总练习时间：',
 		totalSessions: '总练习次数：',
 		totalPracticeTime: '总练习时间：',
 		totalDirections: '总方向数：',
@@ -212,8 +208,6 @@ class PracticeHistoryManager {
         const history = this.getHistory();
         if (history.length === 0) {
             return {
-                weeklySessions: 0,
-                weeklyPracticeTime: 0,
                 totalSessions: 0,
                 totalPracticeTime: 0,
                 totalDirections: 0,
@@ -221,29 +215,6 @@ class PracticeHistoryManager {
                 mostUsedMode: null
             };
         }
-
-        // Calculate weekly stats (current calendar week: Monday to Sunday)
-        const now = new Date();
-        const startOfWeek = new Date(now);
-        const endOfWeek = new Date(now);
-        
-        // Get the start of the current week (Monday)
-        const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
-        const mondayOffset = dayOfWeek === 0 ? -6 : -(dayOfWeek - 1); // If Sunday, go back 6 days; otherwise go back (dayOfWeek - 1) days
-        startOfWeek.setDate(now.getDate() + mondayOffset);
-        startOfWeek.setHours(0, 0, 0, 0); // Start of Monday
-        
-        // Get the end of the current week (Sunday)
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
-        endOfWeek.setHours(23, 59, 59, 999); // End of Sunday
-        
-        const weeklyHistory = history.filter(session => {
-            const sessionDate = new Date(session.timestamp);
-            return sessionDate >= startOfWeek && sessionDate <= endOfWeek;
-        });
-
-        const weeklySessions = weeklyHistory.length;
-        const weeklyPracticeTime = weeklyHistory.reduce((sum, session) => sum + session.duration, 0);
 
         // Calculate total stats
         const totalSessions = history.length;
@@ -262,8 +233,6 @@ class PracticeHistoryManager {
         const mostUsedMode = Object.keys(modeCount).reduce((a, b) => modeCount[a] > modeCount[b] ? a : b, null);
 
         return {
-            weeklySessions,
-            weeklyPracticeTime,
             totalSessions,
             totalPracticeTime,
             totalDirections,
@@ -970,14 +939,6 @@ class TableTennisReactionApp {
         this.overallStats.innerHTML = `
             <h3 data-i18n="overallStats">${translate('overallStats')}</h3>
             <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-label" data-i18n="weeklySessions">${translate('weeklySessions')}</span>
-                    <span class="stat-value">${stats.weeklySessions}</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label" data-i18n="weeklyPracticeTime">${translate('weeklyPracticeTime')}</span>
-                    <span class="stat-value">${this.formatDurationMinutes(stats.weeklyPracticeTime)} ${translate('minutes')}</span>
-                </div>
                 <div class="stat-item">
                     <span class="stat-label" data-i18n="totalSessions">${translate('totalSessions')}</span>
                     <span class="stat-value">${stats.totalSessions}</span>
