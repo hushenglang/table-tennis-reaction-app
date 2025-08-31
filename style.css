@@ -31,8 +31,8 @@ header {
 
 .header-content {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
     gap: 1rem;
 }
 
@@ -53,25 +53,28 @@ header p {
 }
 
 .history-icon-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #2196F3, #1976D2);
     color: white;
     border: none;
     border-radius: 12px;
-    padding: 0.8rem;
+    padding: 0.8rem 1.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
-    margin-top: 0.5rem;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    width: auto;
+    height: auto;
 }
 
 .history-icon-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
 }
 
 .history-icon-btn:active {
@@ -404,6 +407,15 @@ header p {
     }
 }
 
+@keyframes selectedPulse {
+    0%, 100% { 
+        box-shadow: 0 12px 35px rgba(76, 175, 80, 0.5), 0 0 0 2px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+    50% { 
+        box-shadow: 0 15px 40px rgba(76, 175, 80, 0.6), 0 0 0 3px rgba(255, 215, 0, 0.8), 0 0 25px rgba(255, 215, 0, 0.5);
+    }
+}
+
 /* Subtle breathing animation for inactive boxes */
 @keyframes breathe {
     0%, 100% { 
@@ -536,27 +548,35 @@ header p {
     margin-top: 2rem;
     padding-top: 2rem;
     border-top: 2px solid rgba(108, 117, 125, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .start-practice-btn {
     background: linear-gradient(135deg, #2ecc71, #27ae60);
     color: white;
     border: none;
-    padding: 1.2rem 3rem;
-    border-radius: 15px;
-    font-size: 1.3rem;
-    font-weight: 700;
+    padding: 1.6rem 3.5rem;
+    border-radius: 18px;
+    font-size: 2rem;
+    font-weight: 900;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(46, 204, 113, 0.3);
-    margin-bottom: 1rem;
+    box-shadow: 0 10px 30px rgba(46, 204, 113, 0.4), 0 0 0 2px rgba(46, 204, 113, 0.1);
+    margin-bottom: 0.5rem;
     width: 100%;
-    max-width: 300px;
+    max-width: 320px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
 }
 
 .start-practice-btn:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(46, 204, 113, 0.4);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(46, 204, 113, 0.5), 0 0 0 3px rgba(46, 204, 113, 0.2);
+    background: linear-gradient(135deg, #27ae60, #229954);
 }
 
 .start-practice-btn:disabled {
@@ -564,6 +584,22 @@ header p {
     cursor: not-allowed;
     transform: none;
     box-shadow: 0 5px 15px rgba(189, 195, 199, 0.3);
+}
+
+.start-practice-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
 }
 
 .selection-status {
@@ -889,9 +925,12 @@ header p {
 
 
 .mode-btn.selected {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    transform: translateY(-3px);
+    border: 2px solid #ffd700;
+    box-shadow: 0 12px 35px rgba(76, 175, 80, 0.5), 0 0 0 2px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.3);
+    animation: selectedPulse 2s ease-in-out infinite;
+    opacity: 1;
 }
 
 .mode-buttons {
@@ -903,21 +942,24 @@ header p {
 }
 
 .mode-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    border: none;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.7), rgba(118, 75, 162, 0.7));
+    color: rgba(255, 255, 255, 0.85);
+    border: 2px solid transparent;
     padding: 1.5rem;
     border-radius: 20px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
     width: 200px;
     text-align: center;
+    opacity: 0.8;
 }
 
-.mode-btn:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+.mode-btn:hover:not(.selected) {
+    transform: translateY(-2px);
+    opacity: 1;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.35);
 }
 
 .mode-btn:active {
@@ -1193,14 +1235,16 @@ header p {
     }
     
     .start-practice-btn {
-        padding: 1rem 2rem;
-        font-size: 1.2rem;
-        max-width: 280px;
+        padding: 1.3rem 2.5rem;
+        font-size: 1.5rem;
+        max-width: 300px;
+        font-weight: 900;
     }
     
     .start-section {
         margin-top: 1.5rem;
         padding-top: 1.5rem;
+        align-items: center;
     }
     
     /* Advanced layout mobile optimization */
@@ -1359,9 +1403,10 @@ header p {
     }
     
     .history-icon-btn {
-        width: 44px;
-        height: 44px;
-        margin-top: 0;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 0.6rem 1.2rem;
+        margin-top: 0.8rem;
     }
     
     .stats-grid {
@@ -1531,12 +1576,21 @@ header p {
     .start-section {
         margin-top: 1.2rem;
         padding-top: 1.2rem;
+        align-items: center;
     }
     
-    .start-practice-btn {
-        padding: 0.9rem 2rem;
-        font-size: 1.1rem;
-        max-width: 240px;
+.start-practice-btn {
+        padding: 1.2rem 2.3rem;
+        font-size: 1.6rem;
+        max-width: 260px;
+        font-weight: 900;
+    }
+    
+    .history-icon-btn {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.5rem 1rem;
+        margin-top: 0.6rem;
     }
     
     .selection-status {
@@ -1568,13 +1622,6 @@ header p {
         flex-direction: column;
         align-items: center;
         gap: 0.8rem;
-    }
-    
-    .history-icon-btn {
-        width: 40px;
-        height: 40px;
-        padding: 0.6rem;
-        margin-top: 0;
     }
     
     .stats-grid {
