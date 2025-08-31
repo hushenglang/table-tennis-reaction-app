@@ -46,10 +46,11 @@ const I18N_DICTIONARY = {
 		minutes: 'min',
 		seconds: 'sec',
 		overallStats: 'Overall Statistics',
+		weeklySessions: 'Weekly Total Sessions:',
+		weeklyPracticeTime: 'Weekly Total Practice Time:',
 		totalSessions: 'Total Sessions:',
 		totalPracticeTime: 'Total Practice Time:',
 		totalDirections: 'Total Directions:',
-		bestReactionTime: 'Best Reaction Time:',
 		mostUsedMode: 'Most Used Mode:'
 	},
 	zh: {
@@ -98,10 +99,11 @@ const I18N_DICTIONARY = {
 		minutes: '分钟',
 		seconds: '秒',
 		overallStats: '总体统计',
+		weeklySessions: '本周总练习次数：',
+		weeklyPracticeTime: '本周总练习时间：',
 		totalSessions: '总练习次数：',
 		totalPracticeTime: '总练习时间：',
 		totalDirections: '总方向数：',
-		bestReactionTime: '最佳反应时间：',
 		mostUsedMode: '最常用模式：'
 	}
 };
@@ -204,15 +206,29 @@ class PracticeHistoryManager {
         const history = this.getHistory();
         if (history.length === 0) {
             return {
+                weeklySessions: 0,
+                weeklyPracticeTime: 0,
                 totalSessions: 0,
                 totalPracticeTime: 0,
                 totalDirections: 0,
                 averageReactionTime: 0,
-                bestReactionTime: 0,
                 mostUsedMode: null
             };
         }
 
+        // Calculate weekly stats (last 7 days)
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        
+        const weeklyHistory = history.filter(session => {
+            const sessionDate = new Date(session.timestamp);
+            return sessionDate >= oneWeekAgo;
+        });
+
+        const weeklySessions = weeklyHistory.length;
+        const weeklyPracticeTime = weeklyHistory.reduce((sum, session) => sum + session.duration, 0);
+
+        // Calculate total stats
         const totalSessions = history.length;
         const totalPracticeTime = history.reduce((sum, session) => sum + session.duration, 0);
         const totalDirections = history.reduce((sum, session) => sum + session.totalCalls, 0);
@@ -221,7 +237,6 @@ class PracticeHistoryManager {
         const averageReactionTime = allReactionTimes.length > 0 
             ? allReactionTimes.reduce((sum, time) => sum + time, 0) / allReactionTimes.length 
             : 0;
-        const bestReactionTime = allReactionTimes.length > 0 ? Math.min(...allReactionTimes) : 0;
 
         const modeCount = history.reduce((acc, session) => {
             acc[session.mode] = (acc[session.mode] || 0) + 1;
@@ -230,11 +245,12 @@ class PracticeHistoryManager {
         const mostUsedMode = Object.keys(modeCount).reduce((a, b) => modeCount[a] > modeCount[b] ? a : b, null);
 
         return {
+            weeklySessions,
+            weeklyPracticeTime,
             totalSessions,
             totalPracticeTime,
             totalDirections,
             averageReactionTime,
-            bestReactionTime,
             mostUsedMode
         };
     }
@@ -960,6 +976,14 @@ class TableTennisReactionApp {
             <h3 data-i18n="overallStats">${translate('overallStats')}</h3>
             <div class="stats-grid">
                 <div class="stat-item">
+                    <span class="stat-label" data-i18n="weeklySessions">${translate('weeklySessions')}</span>
+                    <span class="stat-value">${stats.weeklySessions}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="weeklyPracticeTime">${translate('weeklyPracticeTime')}</span>
+                    <span class="stat-value">${Math.round(stats.weeklyPracticeTime / 60)} ${translate('minutes')}</span>
+                </div>
+                <div class="stat-item">
                     <span class="stat-label" data-i18n="totalSessions">${translate('totalSessions')}</span>
                     <span class="stat-value">${stats.totalSessions}</span>
                 </div>
@@ -970,10 +994,6 @@ class TableTennisReactionApp {
                 <div class="stat-item">
                     <span class="stat-label" data-i18n="totalDirections">${translate('totalDirections')}</span>
                     <span class="stat-value">${stats.totalDirections}</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label" data-i18n="bestReactionTime">${translate('bestReactionTime')}</span>
-                    <span class="stat-value">${stats.bestReactionTime > 0 ? (stats.bestReactionTime / 1000).toFixed(3) + 's' : '-'}</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-label" data-i18n="mostUsedMode">${translate('mostUsedMode')}</span>
