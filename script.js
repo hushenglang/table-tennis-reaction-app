@@ -216,13 +216,24 @@ class PracticeHistoryManager {
             };
         }
 
-        // Calculate weekly stats (last 7 days)
-        const oneWeekAgo = new Date();
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        // Calculate weekly stats (current calendar week: Monday to Sunday)
+        const now = new Date();
+        const startOfWeek = new Date(now);
+        const endOfWeek = new Date(now);
+        
+        // Get the start of the current week (Monday)
+        const dayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        const mondayOffset = dayOfWeek === 0 ? -6 : -(dayOfWeek - 1); // If Sunday, go back 6 days; otherwise go back (dayOfWeek - 1) days
+        startOfWeek.setDate(now.getDate() + mondayOffset);
+        startOfWeek.setHours(0, 0, 0, 0); // Start of Monday
+        
+        // Get the end of the current week (Sunday)
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999); // End of Sunday
         
         const weeklyHistory = history.filter(session => {
             const sessionDate = new Date(session.timestamp);
-            return sessionDate >= oneWeekAgo;
+            return sessionDate >= startOfWeek && sessionDate <= endOfWeek;
         });
 
         const weeklySessions = weeklyHistory.length;

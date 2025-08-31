@@ -625,6 +625,14 @@ header p {
     flex-wrap: wrap;
 }
 
+.history-bottom-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 2px solid rgba(108, 117, 125, 0.2);
+}
+
 .clear-history-btn {
     padding: 0.8rem 1.5rem;
     border: none;
