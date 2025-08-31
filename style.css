@@ -1120,8 +1120,8 @@ header p {
 /* iPhone Pro Max specific optimizations (6.7" display) */
 @media only screen and (min-width: 428px) and (max-width: 430px) and (-webkit-min-device-pixel-ratio: 3) {
     .box {
-        width: 160px;
-        height: 160px;
+        width: 140px;
+        height: 140px;
         font-size: 4rem;
     }
     
