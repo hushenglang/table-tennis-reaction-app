@@ -49,7 +49,8 @@ const I18N_DICTIONARY = {
 		totalSessions: 'Total Sessions:',
 		totalPracticeTime: 'Total Practice Time:',
 		totalDirections: 'Total Directions:',
-		bestReactionTime: 'Best Reaction Time:',
+		weeklyTotalSessions: 'Weekly Total Sessions:',
+		weeklyTotalPracticeTime: 'Weekly Total Practice Time:',
 		mostUsedMode: 'Most Used Mode:'
 	},
 	zh: {
@@ -101,8 +102,9 @@ const I18N_DICTIONARY = {
 		totalSessions: '总练习次数：',
 		totalPracticeTime: '总练习时间：',
 		totalDirections: '总方向数：',
-		bestReactionTime: '最佳反应时间：',
-		mostUsedMode: '最常用模式：'
+					weeklyTotalSessions: '本周总练习次数：',
+			weeklyTotalPracticeTime: '本周总练习时间：',
+			mostUsedMode: '最常用模式：'
 	}
 };
 
@@ -208,7 +210,8 @@ class PracticeHistoryManager {
                 totalPracticeTime: 0,
                 totalDirections: 0,
                 averageReactionTime: 0,
-                bestReactionTime: 0,
+                weeklyTotalSessions: 0,
+                weeklyTotalPracticeTime: 0,
                 mostUsedMode: null
             };
         }
@@ -221,7 +224,18 @@ class PracticeHistoryManager {
         const averageReactionTime = allReactionTimes.length > 0 
             ? allReactionTimes.reduce((sum, time) => sum + time, 0) / allReactionTimes.length 
             : 0;
-        const bestReactionTime = allReactionTimes.length > 0 ? Math.min(...allReactionTimes) : 0;
+
+        // Calculate weekly statistics (last 7 days)
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        
+        const weeklySessions = history.filter(session => {
+            const sessionDate = new Date(session.timestamp);
+            return sessionDate >= oneWeekAgo;
+        });
+        
+        const weeklyTotalSessions = weeklySessions.length;
+        const weeklyTotalPracticeTime = weeklySessions.reduce((sum, session) => sum + session.duration, 0);
 
         const modeCount = history.reduce((acc, session) => {
             acc[session.mode] = (acc[session.mode] || 0) + 1;
@@ -234,7 +248,8 @@ class PracticeHistoryManager {
             totalPracticeTime,
             totalDirections,
             averageReactionTime,
-            bestReactionTime,
+            weeklyTotalSessions,
+            weeklyTotalPracticeTime,
             mostUsedMode
         };
     }
@@ -972,8 +987,12 @@ class TableTennisReactionApp {
                     <span class="stat-value">${stats.totalDirections}</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-label" data-i18n="bestReactionTime">${translate('bestReactionTime')}</span>
-                    <span class="stat-value">${stats.bestReactionTime > 0 ? (stats.bestReactionTime / 1000).toFixed(3) + 's' : '-'}</span>
+                    <span class="stat-label" data-i18n="weeklyTotalSessions">${translate('weeklyTotalSessions')}</span>
+                    <span class="stat-value">${stats.weeklyTotalSessions}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="weeklyTotalPracticeTime">${translate('weeklyTotalPracticeTime')}</span>
+                    <span class="stat-value">${Math.round(stats.weeklyTotalPracticeTime / 60)} ${translate('minutes')}</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-label" data-i18n="mostUsedMode">${translate('mostUsedMode')}</span>
