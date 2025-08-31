@@ -51,7 +51,9 @@ const I18N_DICTIONARY = {
 		totalSessions: 'Total Sessions:',
 		totalPracticeTime: 'Total Practice Time:',
 		totalDirections: 'Total Directions:',
-		mostUsedMode: 'Most Used Mode:'
+		mostUsedMode: 'Most Used Mode:',
+		currentWeek: 'This Week',
+		weekOf: 'Week of'
 	},
 	zh: {
 		title: '🏓 乒乓球反应训练',
@@ -104,7 +106,9 @@ const I18N_DICTIONARY = {
 		totalSessions: '总练习次数：',
 		totalPracticeTime: '总练习时间：',
 		totalDirections: '总方向数：',
-		mostUsedMode: '最常用模式：'
+		mostUsedMode: '最常用模式：',
+		currentWeek: '本周',
+		weekOf: '周'
 	}
 };
 
@@ -1013,14 +1017,100 @@ class TableTennisReactionApp {
             </div>
         `;
         
-        // Update history list
+        // Update history list grouped by weeks
         if (history.length === 0) {
             this.noHistory.style.display = 'block';
             this.historyList.innerHTML = '<div class="no-history" data-i18n="noHistory">' + translate('noHistory') + '</div>';
         } else {
             this.noHistory.style.display = 'none';
-            this.historyList.innerHTML = history.map(session => this.createHistoryItem(session)).join('');
+            const groupedHistory = this.groupSessionsByWeek(history);
+            this.historyList.innerHTML = this.renderWeeklyGroups(groupedHistory);
         }
+    }
+
+    groupSessionsByWeek(history) {
+        const weeks = new Map();
+        
+        history.forEach(session => {
+            const sessionDate = new Date(session.timestamp);
+            const weekKey = this.getWeekKey(sessionDate);
+            
+            if (!weeks.has(weekKey)) {
+                weeks.set(weekKey, {
+                    weekKey,
+                    startDate: this.getStartOfWeek(sessionDate),
+                    endDate: this.getEndOfWeek(sessionDate),
+                    sessions: []
+                });
+            }
+            
+            weeks.get(weekKey).sessions.push(session);
+        });
+        
+        // Convert to array and sort by week (most recent first)
+        return Array.from(weeks.values()).sort((a, b) => b.startDate - a.startDate);
+    }
+
+    getWeekKey(date) {
+        const startOfWeek = this.getStartOfWeek(date);
+        return startOfWeek.toISOString().split('T')[0]; // Use YYYY-MM-DD of Monday as key
+    }
+
+    getStartOfWeek(date) {
+        const startOfWeek = new Date(date);
+        const dayOfWeek = date.getDay();
+        const mondayOffset = dayOfWeek === 0 ? -6 : -(dayOfWeek - 1);
+        startOfWeek.setDate(date.getDate() + mondayOffset);
+        startOfWeek.setHours(0, 0, 0, 0);
+        return startOfWeek;
+    }
+
+    getEndOfWeek(date) {
+        const endOfWeek = new Date(this.getStartOfWeek(date));
+        endOfWeek.setDate(endOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+        return endOfWeek;
+    }
+
+    renderWeeklyGroups(weeklyGroups) {
+        return weeklyGroups.map(week => {
+            const weekHeader = this.createWeekHeader(week);
+            const weekSessions = week.sessions.map(session => this.createHistoryItem(session)).join('');
+            
+            return `
+                <div class="week-group">
+                    ${weekHeader}
+                    <div class="week-sessions">
+                        ${weekSessions}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    createWeekHeader(week) {
+        const startDate = week.startDate.toLocaleDateString();
+        const endDate = week.endDate.toLocaleDateString();
+        const totalSessions = week.sessions.length;
+        const totalTime = week.sessions.reduce((sum, session) => sum + session.duration, 0);
+        const totalMinutes = Math.round(totalTime / 60);
+        
+        // Check if this is the current week
+        const now = new Date();
+        const isCurrentWeek = now >= week.startDate && now <= week.endDate;
+        const weekLabel = isCurrentWeek ? translate('currentWeek') : translate('weekOf');
+        
+        return `
+            <div class="week-header ${isCurrentWeek ? 'current-week' : ''}">
+                <div class="week-title">
+                    <h4>${weekLabel} ${startDate} - ${endDate}</h4>
+                </div>
+                <div class="week-summary">
+                    <span class="week-stat">${totalSessions} ${translate('sessionsCount', {count: totalSessions})}</span>
+                    <span class="week-stat">${totalMinutes} ${translate('minutes')}</span>
+                </div>
+            </div>
+        `;
     }
 
     createHistoryItem(session) {
