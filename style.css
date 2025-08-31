@@ -691,6 +691,14 @@ header p {
     animation: fadeIn 0.3s ease-in;
 }
 
+.history-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(108, 117, 125, 0.2);
+    display: flex;
+    justify-content: center;
+}
+
 .overall-stats {
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     border-radius: 20px;
