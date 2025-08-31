@@ -1005,6 +1005,9 @@ class TableTennisReactionApp {
             this.noHistory.style.display = 'none';
             const groupedHistory = this.groupSessionsByWeek(history);
             this.historyList.innerHTML = this.renderWeeklyGroups(groupedHistory);
+            
+            // Add event listeners for collapsible week headers
+            this.addWeekToggleListeners();
         }
     }
 
@@ -1056,11 +1059,12 @@ class TableTennisReactionApp {
         return weeklyGroups.map(week => {
             const weekHeader = this.createWeekHeader(week);
             const weekSessions = week.sessions.map(session => this.createHistoryItem(session)).join('');
+            const isCollapsed = this.getWeekCollapsedState(week.weekKey);
             
             return `
                 <div class="week-group">
                     ${weekHeader}
-                    <div class="week-sessions">
+                    <div class="week-sessions${isCollapsed ? ' collapsed' : ''}">
                         ${weekSessions}
                     </div>
                 </div>
@@ -1075,15 +1079,19 @@ class TableTennisReactionApp {
         const totalTime = week.sessions.reduce((sum, session) => sum + session.duration, 0);
         const totalMinutes = this.formatDurationMinutes(totalTime);
         
-        // Check if this is the current week
+        // Check if this is the current week and if it's collapsed
         const now = new Date();
         const isCurrentWeek = now >= week.startDate && now <= week.endDate;
         const weekLabel = isCurrentWeek ? translate('currentWeek') : translate('weekOf');
+        const isCollapsed = this.getWeekCollapsedState(week.weekKey);
         
         return `
-            <div class="week-header ${isCurrentWeek ? 'current-week' : ''}">
+            <div class="week-header ${isCurrentWeek ? 'current-week' : ''}" data-week-key="${week.weekKey}">
                 <div class="week-title">
                     <h4>${weekLabel} ${startDate} - ${endDate}</h4>
+                    <svg class="week-toggle${isCollapsed ? ' rotated' : ''}" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+                    </svg>
                 </div>
                 <div class="week-summary">
                     <span class="week-stat">${translate('sessionsCount', {count: totalSessions})}</span>
@@ -1137,6 +1145,61 @@ class TableTennisReactionApp {
         const minutes = durationInSeconds / 60;
         // If it's a whole number, show as integer; otherwise show with one decimal place
         return minutes % 1 === 0 ? Math.round(minutes) : parseFloat(minutes.toFixed(1));
+    }
+
+    addWeekToggleListeners() {
+        // Add click event listeners to all week headers
+        const weekHeaders = this.historyList.querySelectorAll('.week-header');
+        weekHeaders.forEach(header => {
+            header.addEventListener('click', (e) => {
+                const weekKey = header.getAttribute('data-week-key');
+                this.toggleWeekSessions(weekKey, header);
+            });
+        });
+    }
+
+    toggleWeekSessions(weekKey, headerElement) {
+        // Find the week-sessions element that follows this header
+        const weekGroup = headerElement.closest('.week-group');
+        const weekSessions = weekGroup.querySelector('.week-sessions');
+        const toggleIcon = headerElement.querySelector('.week-toggle');
+        
+        if (weekSessions) {
+            // Toggle the collapsed class
+            weekSessions.classList.toggle('collapsed');
+            
+            // Rotate the toggle icon
+            if (toggleIcon) {
+                toggleIcon.classList.toggle('rotated');
+            }
+            
+            // Store the collapsed state in localStorage
+            this.saveWeekCollapsedState(weekKey, weekSessions.classList.contains('collapsed'));
+        }
+    }
+
+    saveWeekCollapsedState(weekKey, isCollapsed) {
+        try {
+            const collapsedWeeks = JSON.parse(localStorage.getItem('collapsed-weeks') || '{}');
+            if (isCollapsed) {
+                collapsedWeeks[weekKey] = true;
+            } else {
+                delete collapsedWeeks[weekKey];
+            }
+            localStorage.setItem('collapsed-weeks', JSON.stringify(collapsedWeeks));
+        } catch (error) {
+            console.warn('Failed to save week collapsed state:', error);
+        }
+    }
+
+    getWeekCollapsedState(weekKey) {
+        try {
+            const collapsedWeeks = JSON.parse(localStorage.getItem('collapsed-weeks') || '{}');
+            return !!collapsedWeeks[weekKey];
+        } catch (error) {
+            console.warn('Failed to load week collapsed state:', error);
+            return false;
+        }
     }
 }
 

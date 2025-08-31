@@ -1,7 +1,7 @@
 {
-  "name": "Table Tennis Reaction Practice",
+  "name": "Reaction Practice",
   "short_name": "TT Reaction",
-  "description": "Train your table tennis reflexes with random direction calls",
+  "description": "Train your reflexes with random direction calls",
   "icons": [
     {
       "src": "icons/apple-touch-icon-57x57.png",
