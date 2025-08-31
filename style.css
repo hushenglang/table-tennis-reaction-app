@@ -409,10 +409,10 @@ header p {
 
 @keyframes selectedPulse {
     0%, 100% { 
-        box-shadow: 0 12px 35px rgba(52, 152, 219, 0.5), 0 0 0 2px rgba(52, 152, 219, 0.6), 0 0 20px rgba(52, 152, 219, 0.3);
+        box-shadow: 0 12px 35px rgba(52, 152, 219, 0.5), 0 0 0 3px rgba(52, 152, 219, 0.4), 0 0 25px rgba(52, 152, 219, 0.3);
     }
     50% { 
-        box-shadow: 0 15px 40px rgba(52, 152, 219, 0.6), 0 0 0 3px rgba(52, 152, 219, 0.8), 0 0 25px rgba(52, 152, 219, 0.5);
+        box-shadow: 0 16px 45px rgba(52, 152, 219, 0.6), 0 0 0 4px rgba(52, 152, 219, 0.6), 0 0 30px rgba(52, 152, 219, 0.4);
     }
 }
 
@@ -935,8 +935,8 @@ header p {
 .mode-btn.selected {
     background: linear-gradient(135deg, #3498db, #2980b9);
     transform: translateY(-3px);
-    border: 2px solid #2980b9;
-    box-shadow: 0 12px 35px rgba(52, 152, 219, 0.5), 0 0 0 2px rgba(52, 152, 219, 0.6), 0 0 20px rgba(52, 152, 219, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 12px 35px rgba(52, 152, 219, 0.5), 0 0 0 3px rgba(52, 152, 219, 0.4), 0 0 25px rgba(52, 152, 219, 0.3);
     animation: selectedPulse 2s ease-in-out infinite;
     opacity: 1;
 }
