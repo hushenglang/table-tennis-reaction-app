@@ -1,3 +1,103 @@
+// Lightweight i18n utility
+const I18N_DICTIONARY = {
+	en: {
+		title: '🏓 Table Tennis Reaction Practice',
+		titlePlain: 'Table Tennis Reaction Practice',
+		subtitle: 'Train your reflexes with random direction calls',
+		duration: 'Practice Duration',
+		mode: 'Practice Mode',
+		basicMode: 'Basic Mode',
+		basicDesc: 'Left & Right only',
+		advancedMode: 'Advanced Mode',
+		advancedDesc: '4 directions with forward shots',
+		startPractice: 'Start Practice',
+		ready: 'Ready?',
+		pause: 'Pause',
+		resume: 'Resume',
+		back: 'Back',
+		complete: 'Practice Complete!',
+		totalCallsLabel: 'Total directions called:',
+		avgIntervalLabel: 'Average interval:',
+		secondsSuffix: 's',
+		selectionStatus: '{minutes}min {mode} mode - Ready to start!',
+		modeBasicLabel: 'basic',
+		modeAdvancedLabel: 'advanced',
+		go: 'GO!',
+		paused: 'Paused',
+		stopped: 'Stopped',
+		good: 'Good~'
+	},
+	zh: {
+		title: '🏓 乒乓反应训练',
+		titlePlain: '乒乓反应训练',
+		subtitle: '通过随机方向口令训练反应能力',
+		duration: '练习时长',
+		mode: '练习模式',
+		basicMode: '基础模式',
+		basicDesc: '仅左与右',
+		advancedMode: '进阶模式',
+		advancedDesc: '四个方向含前球',
+		startPractice: '开始练习',
+		ready: '准备好了吗？',
+		pause: '暂停',
+		resume: '继续',
+		back: '返回',
+		complete: '练习完成！',
+		totalCallsLabel: '方向提示总数：',
+		avgIntervalLabel: '平均间隔：',
+		secondsSuffix: '秒',
+		selectionStatus: '{minutes}分钟 {mode} 模式 - 准备开始！',
+		modeBasicLabel: '基础',
+		modeAdvancedLabel: '高级',
+		go: '开始！',
+		paused: '已暂停',
+		stopped: '已停止',
+		good: '不错~'
+	}
+};
+
+let CURRENT_LANG = 'en';
+
+function normalizeLanguage(langParam) {
+	if (!langParam) return 'en';
+	const lower = String(langParam).toLowerCase();
+	if (lower === 'zh' || lower === 'zh-cn' || lower === 'zh_hans') return 'zh';
+	return 'en';
+}
+
+function detectLanguageFromUrl() {
+	const params = new URLSearchParams(window.location.search);
+	return normalizeLanguage(params.get('lang'));
+}
+
+function translate(key, vars = undefined) {
+	const dict = I18N_DICTIONARY[CURRENT_LANG] || I18N_DICTIONARY.en;
+	let template = dict[key] ?? I18N_DICTIONARY.en[key] ?? key;
+	if (vars && typeof template === 'string') {
+		template = template.replace(/\{(\w+)\}/g, (m, p1) => (p1 in vars ? String(vars[p1]) : m));
+	}
+	return template;
+}
+
+function applyStaticTranslations() {
+	// Update elements marked with data-i18n
+	document.querySelectorAll('[data-i18n]').forEach(el => {
+		const key = el.getAttribute('data-i18n');
+		if (key) {
+			el.textContent = translate(key);
+		}
+	});
+
+	// Update document title and html lang attribute
+	document.title = translate('titlePlain');
+	document.documentElement.setAttribute('lang', CURRENT_LANG === 'zh' ? 'zh' : 'en');
+}
+
+function setLanguage(lang) {
+	CURRENT_LANG = lang;
+	applyStaticTranslations();
+}
+
 class TableTennisReactionApp {
     constructor() {
         this.selectedTime = 60; // Default 1 minute
@@ -22,6 +122,7 @@ class TableTennisReactionApp {
         this.bindEvents();
         this.initializeAudio();
         this.updateTimeDisplay(); // Initialize time display
+        this.updateStartButton(); // Initialize localized selection status
     }
 
     initializeElements() {
@@ -216,7 +317,8 @@ class TableTennisReactionApp {
 
     updateStartButton() {
         const durationMinutes = this.selectedTime / 60;
-        this.selectionStatus.textContent = `${durationMinutes}min ${this.selectedMode} mode - Ready to start!`;
+        const modeLabel = this.selectedMode === 'basic' ? translate('modeBasicLabel') : translate('modeAdvancedLabel');
+        this.selectionStatus.textContent = translate('selectionStatus', { minutes: durationMinutes, mode: modeLabel });
     }
 
     showPracticeAreaAndStart() {
@@ -289,7 +391,7 @@ class TableTennisReactionApp {
                 this.playBeep(600, 200);
             } else {
                 // Countdown finished, start the actual practice
-                this.statusText.textContent = 'GO!';
+                this.statusText.textContent = translate('go');
                 this.statusText.classList.remove('countdown');
                 this.playBeep(1000, 300); // Different sound for "GO!"
                 
@@ -359,7 +461,7 @@ class TableTennisReactionApp {
         }
         
         // Show pause status
-        this.statusText.textContent = 'Paused';
+        this.statusText.textContent = translate('paused');
         this.statusText.style.display = 'block';
         this.statusText.classList.remove('countdown');
         this.clearBoxHighlights();
@@ -393,7 +495,7 @@ class TableTennisReactionApp {
                 this.playBeep(600, 200);
             } else {
                 // Countdown finished, resume the actual practice
-                this.statusText.textContent = 'GO!';
+                this.statusText.textContent = translate('go');
                 this.statusText.classList.remove('countdown');
                 this.playBeep(1000, 300);
                 
@@ -455,7 +557,7 @@ class TableTennisReactionApp {
         }
         
         // Reset display
-        this.statusText.textContent = 'Stopped';
+        this.statusText.textContent = translate('stopped');
         this.statusText.style.display = 'block';
         this.statusText.classList.remove('countdown');
         this.clearBoxHighlights();
@@ -489,7 +591,7 @@ class TableTennisReactionApp {
         this.playCompletionSound();
         
         // Show completion message
-        this.statusText.textContent = 'Good~';
+        this.statusText.textContent = translate('good');
         this.statusText.style.display = 'block';
         this.clearBoxHighlights();
         
@@ -639,6 +741,9 @@ class TableTennisReactionApp {
 
 // Initialize the app when the page loads
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize language from URL and apply static translations first
+    setLanguage(detectLanguageFromUrl());
+    // Then boot the app so dynamic strings use CURRENT_LANG
     new TableTennisReactionApp();
 });
 
