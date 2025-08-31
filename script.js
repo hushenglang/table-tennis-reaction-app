@@ -140,6 +140,50 @@ class TableTennisReactionApp {
         }
     }
 
+    playCompletionSound() {
+        const audioContext = this.createAudioContext();
+        if (!audioContext) return;
+
+        try {
+            // Resume audio context if it's suspended
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            // Play a pleasant ascending melody to indicate completion
+            const notes = [
+                { frequency: 523, startTime: 0, duration: 0.3 },      // C5
+                { frequency: 659, startTime: 0.2, duration: 0.3 },    // E5
+                { frequency: 784, startTime: 0.4, duration: 0.3 },    // G5
+                { frequency: 1047, startTime: 0.6, duration: 0.5 }    // C6 (longer final note)
+            ];
+
+            notes.forEach(note => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.setValueAtTime(note.frequency, audioContext.currentTime + note.startTime);
+                oscillator.type = 'sine';
+
+                // Create smooth envelope
+                const startTime = audioContext.currentTime + note.startTime;
+                const endTime = startTime + note.duration;
+                
+                gainNode.gain.setValueAtTime(0, startTime);
+                gainNode.gain.linearRampToValueAtTime(0.15, startTime + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, endTime);
+
+                oscillator.start(startTime);
+                oscillator.stop(endTime);
+            });
+        } catch (e) {
+            console.warn('Error playing completion sound:', e);
+        }
+    }
+
     adjustDuration(change) {
         const currentValue = parseFloat(this.durationInput.value);
         const newValue = Math.max(0.5, Math.min(10, currentValue + change));
@@ -440,6 +484,9 @@ class TableTennisReactionApp {
             clearTimeout(this.directionTimeout);
             this.directionTimeout = null;
         }
+        
+        // Play completion sound - a pleasant ascending melody
+        this.playCompletionSound();
         
         // Show completion message
         this.statusText.textContent = 'Good~';
