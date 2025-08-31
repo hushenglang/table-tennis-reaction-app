@@ -83,6 +83,7 @@ header p {
     justify-content: center;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+
 }
 
 .duration-btn:hover {
@@ -109,6 +110,7 @@ header p {
 
 .duration-input:focus {
     outline: none;
+
 }
 
 .practice-area {
