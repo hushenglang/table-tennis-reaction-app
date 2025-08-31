@@ -976,7 +976,7 @@ class TableTennisReactionApp {
                 </div>
                 <div class="stat-item">
                     <span class="stat-label" data-i18n="weeklyPracticeTime">${translate('weeklyPracticeTime')}</span>
-                    <span class="stat-value">${Math.round(stats.weeklyPracticeTime / 60)} ${translate('minutes')}</span>
+                    <span class="stat-value">${this.formatDurationMinutes(stats.weeklyPracticeTime)} ${translate('minutes')}</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-label" data-i18n="totalSessions">${translate('totalSessions')}</span>
@@ -984,7 +984,7 @@ class TableTennisReactionApp {
                 </div>
                 <div class="stat-item">
                     <span class="stat-label" data-i18n="totalPracticeTime">${translate('totalPracticeTime')}</span>
-                    <span class="stat-value">${Math.round(stats.totalPracticeTime / 60)} ${translate('minutes')}</span>
+                    <span class="stat-value">${this.formatDurationMinutes(stats.totalPracticeTime)} ${translate('minutes')}</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-label" data-i18n="totalDirections">${translate('totalDirections')}</span>
@@ -1073,7 +1073,7 @@ class TableTennisReactionApp {
         const endDate = week.endDate.toLocaleDateString();
         const totalSessions = week.sessions.length;
         const totalTime = week.sessions.reduce((sum, session) => sum + session.duration, 0);
-        const totalMinutes = Math.round(totalTime / 60);
+        const totalMinutes = this.formatDurationMinutes(totalTime);
         
         // Check if this is the current week
         const now = new Date();
@@ -1086,7 +1086,7 @@ class TableTennisReactionApp {
                     <h4>${weekLabel} ${startDate} - ${endDate}</h4>
                 </div>
                 <div class="week-summary">
-                    <span class="week-stat">${totalSessions} ${translate('sessionsCount', {count: totalSessions})}</span>
+                    <span class="week-stat">${translate('sessionsCount', {count: totalSessions})}</span>
                     <span class="week-stat">${totalMinutes} ${translate('minutes')}</span>
                 </div>
             </div>
@@ -1107,7 +1107,7 @@ class TableTennisReactionApp {
                 <div class="history-item-stats">
                     <div class="history-stat">
                         <span class="history-stat-label" data-i18n="sessionDuration">${translate('sessionDuration')}</span>
-                        <span class="history-stat-value">${Math.round(session.duration / 60)} ${translate('minutes')}</span>
+                        <span class="history-stat-value">${this.formatDurationMinutes(session.duration)} ${translate('minutes')}</span>
                     </div>
                     <div class="history-stat">
                         <span class="history-stat-label" data-i18n="sessionCalls">${translate('sessionCalls')}</span>
@@ -1131,6 +1131,12 @@ class TableTennisReactionApp {
             this.historyManager.clearHistory();
             this.updateHistoryDisplay();
         }
+    }
+
+    formatDurationMinutes(durationInSeconds) {
+        const minutes = durationInSeconds / 60;
+        // If it's a whole number, show as integer; otherwise show with one decimal place
+        return minutes % 1 === 0 ? Math.round(minutes) : parseFloat(minutes.toFixed(1));
     }
 }
 
