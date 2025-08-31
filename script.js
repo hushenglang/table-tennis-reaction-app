@@ -25,11 +25,11 @@ const I18N_DICTIONARY = {
 		go: 'GO!',
 		paused: 'Paused',
 		stopped: 'Stopped',
-		good: 'Good~'
+		good: 'Awesome~'
 	},
 	zh: {
-		title: '🏓 乒乓反应训练',
-		titlePlain: '乒乓反应训练',
+		title: '🏓 乒乓球反应训练',
+		titlePlain: '乒乓球反应训练',
 		subtitle: '通过随机方向口令训练反应能力',
 		duration: '练习时长',
 		mode: '练习模式',
@@ -48,11 +48,11 @@ const I18N_DICTIONARY = {
 		secondsSuffix: '秒',
 		selectionStatus: '{minutes}分钟 {mode} 模式 - 准备开始！',
 		modeBasicLabel: '基础',
-		modeAdvancedLabel: '高级',
+		modeAdvancedLabel: '进阶',
 		go: '开始！',
 		paused: '已暂停',
 		stopped: '已停止',
-		good: '不错~'
+		good: '很棒~'
 	}
 };
 
