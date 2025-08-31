@@ -167,12 +167,12 @@ header p {
 }
 
 .timer-display {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    background: linear-gradient(135deg, #f39c12, #e67e22);
     color: white;
     padding: 1rem;
     border-radius: 20px;
     margin-bottom: 2rem;
-    box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4), 0 0 20px rgba(231, 76, 60, 0.2);
+    box-shadow: 0 10px 30px rgba(243, 156, 18, 0.4), 0 0 20px rgba(243, 156, 18, 0.2);
     border: 3px solid rgba(255, 255, 255, 0.3);
     position: relative;
     overflow: hidden;
@@ -204,11 +204,11 @@ header p {
 @keyframes timerPulse {
     0%, 100% { 
         transform: scale(1);
-        box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4), 0 0 20px rgba(231, 76, 60, 0.2);
+        box-shadow: 0 10px 30px rgba(243, 156, 18, 0.4), 0 0 20px rgba(243, 156, 18, 0.2);
     }
     50% { 
         transform: scale(1.02);
-        box-shadow: 0 15px 40px rgba(231, 76, 60, 0.5), 0 0 30px rgba(231, 76, 60, 0.3);
+        box-shadow: 0 15px 40px rgba(243, 156, 18, 0.5), 0 0 30px rgba(243, 156, 18, 0.3);
     }
 }
 
@@ -307,10 +307,10 @@ header p {
 }
 
 .right-box.active {
-    background: linear-gradient(135deg, #3498db, #2980b9, #3498db);
+    background: linear-gradient(135deg, #e74c3c, #c0392b, #e74c3c);
     animation: activePulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), flashRight 0.6s ease-out;
-    border-color: #3498db;
-    box-shadow: 0 15px 40px rgba(52, 152, 219, 0.5), 0 0 25px rgba(52, 152, 219, 0.3);
+    border-color: #e74c3c;
+    box-shadow: 0 15px 40px rgba(231, 76, 60, 0.5), 0 0 25px rgba(231, 76, 60, 0.3);
 }
 
 .status-text {
@@ -1040,17 +1040,17 @@ header p {
 }
 
 .left-forward-box.active {
-    background: linear-gradient(135deg, #3498db, #2980b9, #3498db);
+    background: linear-gradient(135deg, #2ecc71, #27ae60, #2ecc71);
     animation: activePulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), flashLeft 0.6s ease-out;
-    border-color: #3498db;
-    box-shadow: 0 15px 40px rgba(52, 152, 219, 0.5), 0 0 25px rgba(52, 152, 219, 0.3);
+    border-color: #2ecc71;
+    box-shadow: 0 15px 40px rgba(46, 204, 113, 0.5), 0 0 25px rgba(46, 204, 113, 0.3);
 }
 
 .right-forward-box.active {
-    background: linear-gradient(135deg, #3498db, #2980b9, #3498db);
+    background: linear-gradient(135deg, #9b59b6, #8e44ad, #9b59b6);
     animation: activePulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), flashRight 0.6s ease-out;
-    border-color: #3498db;
-    box-shadow: 0 15px 40px rgba(52, 152, 219, 0.5), 0 0 25px rgba(52, 152, 219, 0.3);
+    border-color: #9b59b6;
+    box-shadow: 0 15px 40px rgba(155, 89, 182, 0.5), 0 0 25px rgba(155, 89, 182, 0.3);
 }
 
 /* iPhone Pro Display Optimization */
@@ -1143,7 +1143,7 @@ header p {
     }
     
     .right-box.active {
-        box-shadow: 0 15px 35px rgba(52, 152, 219, 0.5), 0 0 25px rgba(52, 152, 219, 0.3);
+        box-shadow: 0 15px 35px rgba(231, 76, 60, 0.5), 0 0 25px rgba(231, 76, 60, 0.3);
     }
     
     .status-text {
@@ -1271,11 +1271,11 @@ header p {
     }
     
     .left-forward-box.active {
-        box-shadow: 0 15px 35px rgba(52, 152, 219, 0.5), 0 0 25px rgba(52, 152, 219, 0.3);
+        box-shadow: 0 15px 35px rgba(46, 204, 113, 0.5), 0 0 25px rgba(46, 204, 113, 0.3);
     }
     
     .right-forward-box.active {
-        box-shadow: 0 15px 35px rgba(52, 152, 219, 0.5), 0 0 25px rgba(52, 152, 219, 0.3);
+        box-shadow: 0 15px 35px rgba(155, 89, 182, 0.5), 0 0 25px rgba(155, 89, 182, 0.3);
     }
 }
 
@@ -1307,7 +1307,7 @@ header p {
     }
     
     .right-box.active {
-        box-shadow: 0 15px 40px rgba(52, 152, 219, 0.5), 0 0 30px rgba(52, 152, 219, 0.3);
+        box-shadow: 0 15px 40px rgba(231, 76, 60, 0.5), 0 0 30px rgba(231, 76, 60, 0.3);
     }
     
     .status-text {

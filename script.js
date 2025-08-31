@@ -532,10 +532,6 @@ class TableTennisReactionApp {
         this.clearBoxHighlights();
         this.lastDirection = null;
         
-        // Clear timer warning states
-        const timerElement = this.timeDisplay.parentElement;
-        timerElement.classList.remove('warning', 'critical');
-        
         this.resetStats();
         
         // Auto-start practice
@@ -779,10 +775,6 @@ class TableTennisReactionApp {
         // Reset timer
         this.timeRemaining = this.selectedTime;
         this.updateTimeDisplay();
-        
-        // Clear timer warning states
-        const timerElement = this.timeDisplay.parentElement;
-        timerElement.classList.remove('warning', 'critical');
     }
 
     endPractice() {
@@ -834,10 +826,6 @@ class TableTennisReactionApp {
         // Reset timer
         this.timeRemaining = this.selectedTime;
         this.updateTimeDisplay();
-        
-        // Clear timer warning states
-        const timerElement = this.timeDisplay.parentElement;
-        timerElement.classList.remove('warning', 'critical');
     }
 
     scheduleNextDirection() {
@@ -938,16 +926,6 @@ class TableTennisReactionApp {
         const minutes = Math.floor(this.timeRemaining / 60);
         const seconds = this.timeRemaining % 60;
         this.timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        
-        // Update timer visual state based on remaining time
-        const timerElement = this.timeDisplay.parentElement;
-        timerElement.classList.remove('warning', 'critical');
-        
-        if (this.timeRemaining <= 10) {
-            timerElement.classList.add('critical');
-        } else if (this.timeRemaining <= 30) {
-            timerElement.classList.add('warning');
-        }
     }
 
     showStats() {
