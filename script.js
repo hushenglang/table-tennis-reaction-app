@@ -75,41 +75,7 @@ class TableTennisReactionApp {
             this.selectTimer(parseFloat(e.target.value) * 60); // Convert minutes to seconds
         });
         
-        // Custom duration slider
-        this.customMinutesSlider.addEventListener('input', (e) => {
-            this.selectCustomTimer(parseFloat(e.target.value));
-        });
-        
-        // Stepper buttons
-        this.minutesMinusBtn.addEventListener('click', () => {
-            const currentValue = parseFloat(this.customMinutesSlider.value);
-            const newValue = Math.max(0.5, currentValue - 0.5);
-            this.customMinutesSlider.value = newValue;
-            this.selectCustomTimer(newValue);
-        });
-        
-        this.minutesPlusBtn.addEventListener('click', () => {
-            const currentValue = parseFloat(this.customMinutesSlider.value);
-            const newValue = Math.min(10, currentValue + 0.5);
-            this.customMinutesSlider.value = newValue;
-            this.selectCustomTimer(newValue);
-        });
-        
-        // Quick adjust buttons
-        this.quickBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const minutes = parseFloat(e.target.dataset.minutes);
-                this.customMinutesSlider.value = minutes;
-                this.selectCustomTimer(minutes);
-                
-                // Update quick button selection state
-                this.quickBtns.forEach(qBtn => qBtn.classList.remove('selected'));
-                e.target.classList.add('selected');
-            });
-        });
-        
-        // Set default custom duration to 2 minutes
-        this.selectCustomTimer(2);
+        // Remove unused event listeners for elements that don't exist
 
         // Mode selection
         this.modeButtons.forEach(btn => {
@@ -188,47 +154,18 @@ class TableTennisReactionApp {
         this.updateStartButton();
     }
     
-    selectCustomTimer(minutes) {
-        const seconds = Math.round(minutes * 60);
-        this.selectedTime = seconds;
-        this.timeRemaining = seconds;
-        this.updateTimeDisplay();
-        
-        // Update custom time display
-        this.updateCustomTimeDisplay(minutes);
-        
-        // Clear button selection state
-        this.timerButtons.forEach(btn => btn.classList.remove('selected'));
-        
-        // Check if the current value matches a quick button and highlight it
-        const matchingQuickBtn = Array.from(this.quickBtns).find(btn => 
-            parseFloat(btn.dataset.minutes) === minutes
-        );
-        
-        this.quickBtns.forEach(btn => btn.classList.remove('selected'));
-        if (matchingQuickBtn) {
-            matchingQuickBtn.classList.add('selected');
-        }
-        
-        // Add visual feedback for custom slider
-        this.customMinutesSlider.classList.add('selected');
-        
-        this.updateStartButton();
-    }
-    
-    updateCustomTimeDisplay(minutes) {
-        const totalSeconds = Math.round(minutes * 60);
-        const mins = Math.floor(totalSeconds / 60);
-        const secs = totalSeconds % 60;
-        this.customTimeDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-    }
+    // Removed unused methods that reference non-existent elements
 
     selectMode(mode) {
         this.selectedMode = mode;
         
         // Update button selection state
         this.modeButtons.forEach(btn => btn.classList.remove('selected'));
-        event.target.closest('.mode-btn').classList.add('selected');
+        // Find the button with the matching mode and add selected class
+        const selectedButton = Array.from(this.modeButtons).find(btn => btn.dataset.mode === mode);
+        if (selectedButton) {
+            selectedButton.classList.add('selected');
+        }
         
         this.updateStartButton();
     }
