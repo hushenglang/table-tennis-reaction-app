@@ -514,28 +514,7 @@ header p {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.stats::before {
-    content: '✨⭐💫🌟';
-    position: absolute;
-    top: -20px;
-    left: -20px;
-    right: -20px;
-    bottom: -20px;
-    font-size: 1.5rem;
-    pointer-events: none;
-    z-index: 15;
-    animation: sparkleFloat 3s ease-in-out infinite;
-    color: transparent;
-    text-shadow: 
-        -30px -30px 0 #FFD700,
-        30px -30px 0 #FF69B4,
-        -30px 30px 0 #00BFFF,
-        30px 30px 0 #32CD32,
-        0 -40px 0 #FF4500,
-        -40px 0 0 #9370DB,
-        40px 0 0 #FF1493,
-        0 40px 0 #00FF7F;
-}
+
 
 .stats::after {
     content: '🎉';
@@ -547,56 +526,7 @@ header p {
     z-index: 10;
 }
 
-@keyframes sparkleFloat {
-    0%, 100% {
-        transform: translateY(0) rotate(0deg);
-        text-shadow: 
-            -30px -30px 0 #FFD700,
-            30px -30px 0 #FF69B4,
-            -30px 30px 0 #00BFFF,
-            30px 30px 0 #32CD32,
-            0 -40px 0 #FF4500,
-            -40px 0 0 #9370DB,
-            40px 0 0 #FF1493,
-            0 40px 0 #00FF7F;
-    }
-    25% {
-        transform: translateY(-5px) rotate(90deg);
-        text-shadow: 
-            -25px -35px 0 #FFD700,
-            35px -25px 0 #FF69B4,
-            -35px 25px 0 #00BFFF,
-            25px 35px 0 #32CD32,
-            5px -45px 0 #FF4500,
-            -45px 5px 0 #9370DB,
-            45px -5px 0 #FF1493,
-            -5px 45px 0 #00FF7F;
-    }
-    50% {
-        transform: translateY(-8px) rotate(180deg);
-        text-shadow: 
-            -20px -40px 0 #FFD700,
-            40px -20px 0 #FF69B4,
-            -40px 20px 0 #00BFFF,
-            20px 40px 0 #32CD32,
-            10px -50px 0 #FF4500,
-            -50px 10px 0 #9370DB,
-            50px -10px 0 #FF1493,
-            -10px 50px 0 #00FF7F;
-    }
-    75% {
-        transform: translateY(-5px) rotate(270deg);
-        text-shadow: 
-            -35px -25px 0 #FFD700,
-            25px -35px 0 #FF69B4,
-            -25px 35px 0 #00BFFF,
-            35px 25px 0 #32CD32,
-            -5px -45px 0 #FF4500,
-            -45px -5px 0 #9370DB,
-            45px 5px 0 #FF1493,
-            5px 45px 0 #00FF7F;
-    }
-}
+
 
 @keyframes practiceCompleteEntrance {
     0% { 
