@@ -1,8 +1,8 @@
 class TableTennisReactionApp {
     constructor() {
-        this.selectedTime = 0;
-        this.selectedMode = null;
-        this.timeRemaining = 0;
+        this.selectedTime = 60; // Default 1 minute
+        this.selectedMode = 'basic'; // Default basic mode
+        this.timeRemaining = 60;
         this.isRunning = false;
         this.isPaused = false;
         this.isCountingDown = false;
@@ -21,6 +21,7 @@ class TableTennisReactionApp {
         this.initializeElements();
         this.bindEvents();
         this.initializeAudio();
+        this.updateTimeDisplay(); // Initialize time display
     }
 
     initializeElements() {
@@ -29,12 +30,10 @@ class TableTennisReactionApp {
         
         // Combined selection page elements
         this.selectionPage = document.getElementById('selectionPage');
-        this.timerButtons = document.querySelectorAll('.timer-btn');
-        this.customMinutesSlider = document.getElementById('customMinutesSlider');
-        this.customTimeDisplay = document.getElementById('customTimeDisplay');
-        this.minutesMinusBtn = document.getElementById('minutesMinus');
-        this.minutesPlusBtn = document.getElementById('minutesPlus');
-        this.quickBtns = document.querySelectorAll('.quick-btn');
+        this.durationInput = document.getElementById('durationInput');
+        this.decreaseBtn = document.getElementById('decreaseBtn');
+        this.increaseBtn = document.getElementById('increaseBtn');
+
         this.modeButtons = document.querySelectorAll('.mode-btn');
         this.startPracticeBtn = document.getElementById('startPracticeBtn');
         this.selectionStatus = document.getElementById('selectionStatus');
@@ -57,7 +56,6 @@ class TableTennisReactionApp {
         this.rightForwardBox = document.getElementById('rightForwardBox');
         
         this.statusText = document.getElementById('statusText');
-        this.startBtn = document.getElementById('startBtn');
         this.pauseBtn = document.getElementById('pauseBtn');
         this.resumeBtn = document.getElementById('resumeBtn');
         this.backBtn = document.getElementById('backBtn');
@@ -69,11 +67,12 @@ class TableTennisReactionApp {
     }
 
     bindEvents() {
-        // Timer selection
-        this.timerButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                this.selectTimer(parseInt(e.target.dataset.time));
-            });
+        // Duration controls
+        this.decreaseBtn.addEventListener('click', () => this.adjustDuration(-0.5));
+        this.increaseBtn.addEventListener('click', () => this.adjustDuration(0.5));
+        
+        this.durationInput.addEventListener('input', (e) => {
+            this.selectTimer(parseFloat(e.target.value) * 60); // Convert minutes to seconds
         });
         
         // Custom duration slider
@@ -119,11 +118,10 @@ class TableTennisReactionApp {
             });
         });
 
-        // Start practice button
-        this.startPracticeBtn.addEventListener('click', () => this.showPracticeArea());
+        // Start practice button - now auto-starts practice
+        this.startPracticeBtn.addEventListener('click', () => this.showPracticeAreaAndStart());
 
         // Control buttons
-        this.startBtn.addEventListener('click', () => this.startPractice());
         this.pauseBtn.addEventListener('click', () => this.pausePractice());
         this.resumeBtn.addEventListener('click', () => this.resumePractice());
         this.backBtn.addEventListener('click', () => this.backToSelection());
@@ -176,18 +174,17 @@ class TableTennisReactionApp {
         }
     }
 
+    adjustDuration(change) {
+        const currentValue = parseFloat(this.durationInput.value);
+        const newValue = Math.max(0.5, Math.min(10, currentValue + change));
+        this.durationInput.value = newValue;
+        this.selectTimer(newValue * 60);
+    }
+
     selectTimer(seconds) {
         this.selectedTime = seconds;
         this.timeRemaining = seconds;
         this.updateTimeDisplay();
-        
-        // Update button selection state
-        this.timerButtons.forEach(btn => btn.classList.remove('selected'));
-        event.target.classList.add('selected');
-        
-        // Clear custom slider selection visual state
-        this.customMinutesSlider.classList.remove('selected');
-        
         this.updateStartButton();
     }
     
@@ -237,22 +234,11 @@ class TableTennisReactionApp {
     }
 
     updateStartButton() {
-        if (this.selectedTime > 0 && this.selectedMode) {
-            this.startPracticeBtn.disabled = false;
-            this.selectionStatus.textContent = `${this.selectedTime/60}min ${this.selectedMode} mode - Ready to start!`;
-        } else {
-            this.startPracticeBtn.disabled = true;
-            if (!this.selectedTime && !this.selectedMode) {
-                this.selectionStatus.textContent = 'Select duration and mode to start';
-            } else if (!this.selectedTime) {
-                this.selectionStatus.textContent = 'Select practice duration';
-            } else {
-                this.selectionStatus.textContent = 'Select practice mode';
-            }
-        }
+        const durationMinutes = this.selectedTime / 60;
+        this.selectionStatus.textContent = `${durationMinutes}min ${this.selectedMode} mode - Ready to start!`;
     }
 
-    showPracticeArea() {
+    showPracticeAreaAndStart() {
         this.selectionPage.style.display = 'none';
         this.practiceArea.style.display = 'block';
         this.header.style.display = 'none'; // Hide header in practice area
@@ -266,8 +252,6 @@ class TableTennisReactionApp {
             this.advancedLayout.style.display = 'flex';
         }
         
-        this.statusText.textContent = 'Ready?';
-        this.statusText.style.display = 'block';
         this.clearBoxHighlights();
         this.lastDirection = null;
         
@@ -276,6 +260,11 @@ class TableTennisReactionApp {
         timerElement.classList.remove('warning', 'critical');
         
         this.resetStats();
+        
+        // Auto-start practice
+        setTimeout(() => {
+            this.startPractice();
+        }, 100);
     }
 
     backToSelection() {
@@ -294,7 +283,6 @@ class TableTennisReactionApp {
         
         this.isCountingDown = true;
         this.countdownValue = 3;
-        this.startBtn.style.display = 'none';
         this.pauseBtn.style.display = 'inline-block';
         this.resumeBtn.style.display = 'none';
         this.statsDiv.style.display = 'none';
@@ -468,7 +456,6 @@ class TableTennisReactionApp {
         this.isRunning = false;
         this.isCountingDown = false;
         this.isPaused = false;
-        this.startBtn.style.display = 'inline-block';
         this.pauseBtn.style.display = 'none';
         this.resumeBtn.style.display = 'none';
         
@@ -504,7 +491,6 @@ class TableTennisReactionApp {
     endPractice() {
         this.isRunning = false;
         this.isPaused = false;
-        this.startBtn.style.display = 'inline-block';
         this.pauseBtn.style.display = 'none';
         this.resumeBtn.style.display = 'none';
         
@@ -677,18 +663,15 @@ document.addEventListener('keydown', (e) => {
     // Space bar to start/pause/resume
     if (e.code === 'Space') {
         e.preventDefault();
-        const startBtn = document.getElementById('startBtn');
         const pauseBtn = document.getElementById('pauseBtn');
         const resumeBtn = document.getElementById('resumeBtn');
         const startPracticeBtn = document.getElementById('startPracticeBtn');
         
-        if (startBtn.style.display !== 'none') {
-            startBtn.click();
-        } else if (pauseBtn.style.display !== 'none') {
+        if (pauseBtn.style.display !== 'none') {
             pauseBtn.click();
         } else if (resumeBtn.style.display !== 'none') {
             resumeBtn.click();
-        } else if (startPracticeBtn && !startPracticeBtn.disabled) {
+        } else if (startPracticeBtn) {
             startPracticeBtn.click();
         }
     }
@@ -703,15 +686,43 @@ document.addEventListener('keydown', (e) => {
         }
     }
     
-    // Number keys for timer selection
+    // Number keys for duration input
     if (e.code === 'Digit1') {
-        document.querySelector('[data-time="60"]')?.click();
+        const durationInput = document.getElementById('durationInput');
+        if (durationInput && document.getElementById('selectionPage').style.display !== 'none') {
+            durationInput.value = '1';
+            durationInput.dispatchEvent(new Event('input'));
+        }
     }
     if (e.code === 'Digit2') {
-        const customMinutesSlider = document.getElementById('customMinutesSlider');
-        if (customMinutesSlider) {
-            customMinutesSlider.value = 2;
-            customMinutesSlider.dispatchEvent(new Event('input'));
+        const durationInput = document.getElementById('durationInput');
+        if (durationInput && document.getElementById('selectionPage').style.display !== 'none') {
+            durationInput.value = '2';
+            durationInput.dispatchEvent(new Event('input'));
+        }
+    }
+    if (e.code === 'Digit3') {
+        const durationInput = document.getElementById('durationInput');
+        if (durationInput && document.getElementById('selectionPage').style.display !== 'none') {
+            durationInput.value = '3';
+            durationInput.dispatchEvent(new Event('input'));
+        }
+    }
+    
+    // Plus/Minus keys for duration adjustment
+    if (e.code === 'Equal' || e.code === 'NumpadAdd') {
+        e.preventDefault();
+        const increaseBtn = document.getElementById('increaseBtn');
+        if (increaseBtn && document.getElementById('selectionPage').style.display !== 'none') {
+            increaseBtn.click();
+        }
+    }
+    if (e.code === 'Minus' || e.code === 'NumpadSubtract') {
+        e.preventDefault();
+        const decreaseBtn = document.getElementById('decreaseBtn');
+        if (decreaseBtn && document.getElementById('selectionPage').style.display !== 'none') {
+            decreaseBtn.click();
+
         }
     }
     

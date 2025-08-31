@@ -39,31 +39,12 @@
             <div class="selection-page" id="selectionPage">
                 <div class="duration-section">
                     <h2>Practice Duration</h2>
-                    <div class="duration-controls">
-                        <div class="preset-timers">
-                            <button class="timer-btn" data-time="30">30s</button>
-                            <button class="timer-btn" data-time="60">1min</button>
-                            <button class="timer-btn" data-time="90">1.5min</button>
-                            <button class="timer-btn" data-time="180">3min</button>
-                            <button class="timer-btn" data-time="300">5min</button>
-                        </div>
-                        <div class="custom-duration-section">
-                            <h3>Custom Duration</h3>
-                            <div class="custom-duration">
-                                <button class="stepper-btn minus-btn" id="minutesMinus">−</button>
-                                <div class="time-display">
-                                    <span id="customTimeDisplay">2:00</span>
-                                    <input type="range" id="customMinutesSlider" min="0.5" max="10" value="2" step="0.5" class="time-slider">
-                                </div>
-                                <button class="stepper-btn plus-btn" id="minutesPlus">+</button>
-                            </div>
-                            <div class="quick-adjust">
-                                <button class="quick-btn" data-minutes="0.5">30s</button>
-                                <button class="quick-btn" data-minutes="1">1m</button>
-                                <button class="quick-btn" data-minutes="2">2m</button>
-                                <button class="quick-btn" data-minutes="3">3m</button>
-                                <button class="quick-btn" data-minutes="5">5m</button>
-                            </div>
+                    <div class="custom-duration">
+                        <div class="duration-controls">
+                            <button type="button" class="duration-btn decrease" id="decreaseBtn">−</button>
+                            <input type="number" id="durationInput" min="0.5" max="10" step="0.5" value="1" class="duration-input" readonly>
+                            <button type="button" class="duration-btn increase" id="increaseBtn">+</button>
+
                         </div>
                     </div>
                 </div>
@@ -71,7 +52,7 @@
                 <div class="mode-section">
                     <h2>Practice Mode</h2>
                     <div class="mode-buttons">
-                        <button class="mode-btn" data-mode="basic">
+                        <button class="mode-btn selected" data-mode="basic">
                             <div class="mode-title">Basic Mode</div>
                             <div class="mode-description">Left & Right only</div>
                             <div class="mode-visual">
@@ -93,12 +74,12 @@
                 </div>
 
                 <div class="start-section">
-                    <button class="start-practice-btn" id="startPracticeBtn" disabled>
+                    <div class="selection-status" id="selectionStatus">
+                        1min basic mode - Ready to start!
+                    </div>
+                    <button class="start-practice-btn" id="startPracticeBtn">
                         Start Practice
                     </button>
-                    <div class="selection-status" id="selectionStatus">
-                        Select duration and mode to start
-                    </div>
                 </div>
             </div>
 
@@ -130,7 +111,6 @@
                 </div>
 
                 <div class="control-buttons">
-                    <button id="startBtn" class="control-btn start">Start</button>
                     <button id="pauseBtn" class="control-btn pause" style="display: none;">Pause</button>
                     <button id="resumeBtn" class="control-btn resume" style="display: none;">Resume</button>
                     <button id="backBtn" class="control-btn back">Back</button>
