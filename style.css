@@ -41,7 +41,7 @@ header {
 }
 
 header h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin-bottom: 0.5rem;
     color: #2c3e50;
 }
@@ -1199,7 +1199,7 @@ header p {
     }
     
     header h1 {
-        font-size: 2.2rem;
+        font-size:2rem;
         margin-bottom: 0.3rem;
         line-height: 1.2;
     }
