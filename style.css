@@ -25,6 +25,21 @@ body {
     backdrop-filter: blur(10px);
 }
 
+header {
+    position: relative;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.header-text {
+    flex: 1;
+}
+
 header h1 {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
@@ -35,6 +50,32 @@ header p {
     color: #7f8c8d;
     font-size: 1.1rem;
     margin-bottom: 2rem;
+}
+
+.history-icon-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-top: 0.5rem;
+}
+
+.history-icon-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.history-icon-btn:active {
+    transform: translateY(0);
 }
 
 .timer-selection h2 {
@@ -531,6 +572,211 @@ header p {
     margin-bottom: 1rem;
 }
 
+/* History Page Styles */
+.history-page {
+    animation: fadeIn 0.5s ease-in;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.history-title-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.back-to-main-btn {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+}
+
+.back-to-main-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(149, 165, 166, 0.4);
+}
+
+.history-header h2 {
+    color: #2c3e50;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.history-controls {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.clear-history-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.clear-history-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(231, 76, 60, 0.4);
+}
+
+.history-content {
+    animation: fadeIn 0.3s ease-in;
+}
+
+.overall-stats {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(102, 126, 234, 0.1);
+}
+
+.overall-stats h3 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    text-align: center;
+    font-weight: 700;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+}
+
+.stat-label {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.stat-value {
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.history-list {
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 1.5rem;
+    border: 2px solid rgba(102, 126, 234, 0.1);
+}
+
+.history-item {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.history-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.history-item:last-child {
+    margin-bottom: 0;
+}
+
+.history-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.history-date {
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.history-mode {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.history-item-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.8rem;
+}
+
+.history-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.history-stat-label {
+    color: #7f8c8d;
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
+}
+
+.history-stat-value {
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.no-history {
+    text-align: center;
+    color: #7f8c8d;
+    font-style: italic;
+    padding: 2rem;
+    font-size: 1.1rem;
+}
+
 
 
 .mode-btn.selected {
@@ -965,6 +1211,64 @@ header p {
         max-width: 300px;
     }
     
+    /* History page mobile styles */
+    .history-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .history-title-section {
+        gap: 0.8rem;
+    }
+    
+    .history-header h2 {
+        font-size: 1.6rem;
+    }
+    
+    .back-to-main-btn {
+        width: 40px;
+        height: 40px;
+        padding: 0.6rem;
+    }
+    
+    .history-controls {
+        justify-content: center;
+    }
+    
+    .clear-history-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .history-icon-btn {
+        width: 44px;
+        height: 44px;
+        margin-top: 0;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.8rem;
+    }
+    
+    .stat-item {
+        padding: 0.6rem;
+    }
+    
+    .history-item-stats {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 0.6rem;
+    }
+    
     /* Advanced layout for standard mobile */
     .advanced-layout {
         gap: 1.5rem;
@@ -1093,6 +1397,73 @@ header p {
     .selection-status {
         font-size: 0.9rem;
         margin-top: 0.3rem;
+    }
+    
+    /* History page for iPhone 14/15 Pro */
+    .history-header {
+        margin-bottom: 1.2rem;
+    }
+    
+    .history-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    .back-to-main-btn {
+        width: 36px;
+        height: 36px;
+        padding: 0.5rem;
+    }
+    
+    .clear-history-btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.85rem;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .history-icon-btn {
+        width: 40px;
+        height: 40px;
+        padding: 0.6rem;
+        margin-top: 0;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.6rem;
+    }
+    
+    .stat-item {
+        padding: 0.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+    }
+    
+    .stat-value {
+        font-size: 0.9rem;
+    }
+    
+    .history-item {
+        padding: 0.8rem;
+    }
+    
+    .history-item-stats {
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+        gap: 0.5rem;
+    }
+    
+    .history-stat-label {
+        font-size: 0.7rem;
+    }
+    
+    .history-stat-value {
+        font-size: 0.8rem;
     }
     
     /* Advanced layout for iPhone 14/15 Pro */
