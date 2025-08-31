@@ -1,8 +1,8 @@
 // Lightweight i18n utility
 const I18N_DICTIONARY = {
 	en: {
-		title: '🏓 Table Tennis Reaction Practice',
-		titlePlain: 'Table Tennis Reaction Practice',
+		title: '🏓 Reaction Practice',
+		titlePlain: 'Reaction Practice',
 		subtitle: 'Train your reflexes with random direction calls',
 		duration: 'Practice Duration',
 		mode: 'Practice Mode',
@@ -27,6 +27,7 @@ const I18N_DICTIONARY = {
 		stopped: 'Stopped',
 		good: 'Awesome~',
 		// History feature translations
+		history: 'History',
 		practiceHistory: 'Practice History',
 		noHistory: 'No practice sessions yet',
 		viewHistory: 'View History',
@@ -56,8 +57,8 @@ const I18N_DICTIONARY = {
 		weekOf: 'Week of'
 	},
 	zh: {
-		title: '🏓 乒乓球反应训练',
-		titlePlain: '乒乓球反应训练',
+		title: '🏓 反应训练',
+		titlePlain: '反应训练',
 		subtitle: '通过随机方向口令训练反应能力',
 		duration: '练习时长',
 		mode: '练习模式',
@@ -82,6 +83,7 @@ const I18N_DICTIONARY = {
 		stopped: '已停止',
 		good: '很棒~',
 		// History feature translations
+		history: '历史',
 		practiceHistory: '练习历史',
 		noHistory: '暂无练习记录',
 		viewHistory: '查看历史',
