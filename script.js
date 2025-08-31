@@ -25,7 +25,32 @@ const I18N_DICTIONARY = {
 		go: 'GO!',
 		paused: 'Paused',
 		stopped: 'Stopped',
-		good: 'Awesome~'
+		good: 'Awesome~',
+		// History feature translations
+		practiceHistory: 'Practice History',
+		noHistory: 'No practice sessions yet',
+		viewHistory: 'View History',
+		hideHistory: 'Hide History',
+		clearHistory: 'Clear History',
+		confirmClear: 'Are you sure you want to clear all practice history?',
+		sessionsCount: '{count} sessions',
+		sessionDetails: 'Session Details',
+		sessionDate: 'Date:',
+		sessionMode: 'Mode:',
+		sessionDuration: 'Duration:',
+		sessionCalls: 'Directions:',
+		sessionAvgTime: 'Avg Reaction:',
+		sessionCompleted: 'Completed:',
+		yes: 'Yes',
+		no: 'No',
+		minutes: 'min',
+		seconds: 'sec',
+		overallStats: 'Overall Statistics',
+		totalSessions: 'Total Sessions:',
+		totalPracticeTime: 'Total Practice Time:',
+		totalDirections: 'Total Directions:',
+		bestReactionTime: 'Best Reaction Time:',
+		mostUsedMode: 'Most Used Mode:'
 	},
 	zh: {
 		title: '🏓 乒乓球反应训练',
@@ -52,7 +77,32 @@ const I18N_DICTIONARY = {
 		go: '开始！',
 		paused: '已暂停',
 		stopped: '已停止',
-		good: '很棒~'
+		good: '很棒~',
+		// History feature translations
+		practiceHistory: '练习历史',
+		noHistory: '暂无练习记录',
+		viewHistory: '查看历史',
+		hideHistory: '隐藏历史',
+		clearHistory: '清除历史',
+		confirmClear: '确定要清除所有练习历史记录吗？',
+		sessionsCount: '{count} 次练习',
+		sessionDetails: '练习详情',
+		sessionDate: '日期：',
+		sessionMode: '模式：',
+		sessionDuration: '时长：',
+		sessionCalls: '方向数：',
+		sessionAvgTime: '平均反应：',
+		sessionCompleted: '完成：',
+		yes: '是',
+		no: '否',
+		minutes: '分钟',
+		seconds: '秒',
+		overallStats: '总体统计',
+		totalSessions: '总练习次数：',
+		totalPracticeTime: '总练习时间：',
+		totalDirections: '总方向数：',
+		bestReactionTime: '最佳反应时间：',
+		mostUsedMode: '最常用模式：'
 	}
 };
 
@@ -98,6 +148,98 @@ function setLanguage(lang) {
 	applyStaticTranslations();
 }
 
+class PracticeHistoryManager {
+    constructor() {
+        this.storageKey = 'table-tennis-practice-history';
+        this.maxHistoryItems = 100; // Limit to prevent storage overflow
+    }
+
+    saveSession(sessionData) {
+        try {
+            const history = this.getHistory();
+            const session = {
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                ...sessionData
+            };
+            
+            history.unshift(session); // Add to beginning
+            
+            // Keep only the most recent sessions
+            if (history.length > this.maxHistoryItems) {
+                history.splice(this.maxHistoryItems);
+            }
+            
+            localStorage.setItem(this.storageKey, JSON.stringify(history));
+            return session;
+        } catch (error) {
+            console.error('Failed to save practice session:', error);
+            return null;
+        }
+    }
+
+    getHistory() {
+        try {
+            const stored = localStorage.getItem(this.storageKey);
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Failed to load practice history:', error);
+            return [];
+        }
+    }
+
+    clearHistory() {
+        try {
+            localStorage.removeItem(this.storageKey);
+            return true;
+        } catch (error) {
+            console.error('Failed to clear practice history:', error);
+            return false;
+        }
+    }
+
+    getStats() {
+        const history = this.getHistory();
+        if (history.length === 0) {
+            return {
+                totalSessions: 0,
+                totalPracticeTime: 0,
+                totalDirections: 0,
+                averageReactionTime: 0,
+                bestReactionTime: 0,
+                mostUsedMode: null
+            };
+        }
+
+        const totalSessions = history.length;
+        const totalPracticeTime = history.reduce((sum, session) => sum + session.duration, 0);
+        const totalDirections = history.reduce((sum, session) => sum + session.totalCalls, 0);
+        
+        const allReactionTimes = history.flatMap(session => session.intervals || []);
+        const averageReactionTime = allReactionTimes.length > 0 
+            ? allReactionTimes.reduce((sum, time) => sum + time, 0) / allReactionTimes.length 
+            : 0;
+        const bestReactionTime = allReactionTimes.length > 0 ? Math.min(...allReactionTimes) : 0;
+
+        const modeCount = history.reduce((acc, session) => {
+            acc[session.mode] = (acc[session.mode] || 0) + 1;
+            return acc;
+        }, {});
+        const mostUsedMode = Object.keys(modeCount).reduce((a, b) => modeCount[a] > modeCount[b] ? a : b, null);
+
+        return {
+            totalSessions,
+            totalPracticeTime,
+            totalDirections,
+            averageReactionTime,
+            bestReactionTime,
+            mostUsedMode
+        };
+    }
+}
+
 class TableTennisReactionApp {
     constructor() {
         this.selectedTime = 60; // Default 1 minute
@@ -117,6 +259,10 @@ class TableTennisReactionApp {
         this.lastDirection = null;
         this.audioContext = null;
         this.pausedTime = 0; // Track time when paused
+        this.sessionStartTime = null; // Track when session actually started
+        
+        // Initialize history manager
+        this.historyManager = new PracticeHistoryManager();
         
         this.initializeElements();
         this.bindEvents();
@@ -138,6 +284,14 @@ class TableTennisReactionApp {
         this.modeButtons = document.querySelectorAll('.mode-btn');
         this.startPracticeBtn = document.getElementById('startPracticeBtn');
         this.selectionStatus = document.getElementById('selectionStatus');
+        
+        // History elements
+        this.historyToggleBtn = document.getElementById('historyToggleBtn');
+        this.clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        this.historyContent = document.getElementById('historyContent');
+        this.overallStats = document.getElementById('overallStats');
+        this.historyList = document.getElementById('historyList');
+        this.noHistory = document.getElementById('noHistory');
         
         // Practice area elements
         this.practiceArea = document.getElementById('practiceArea');
@@ -187,6 +341,10 @@ class TableTennisReactionApp {
 
         // Start practice button - now auto-starts practice
         this.startPracticeBtn.addEventListener('click', () => this.showPracticeAreaAndStart());
+
+        // History controls
+        this.historyToggleBtn.addEventListener('click', () => this.toggleHistory());
+        this.clearHistoryBtn.addEventListener('click', () => this.clearHistory());
 
         // Control buttons
         this.pauseBtn.addEventListener('click', () => this.pausePractice());
@@ -415,6 +573,7 @@ class TableTennisReactionApp {
         this.intervals = [];
         this.lastCallTime = Date.now();
         this.lastDirection = null;
+        this.sessionStartTime = Date.now(); // Track session start time
         
         // Hide the status text now that practice is starting
         this.statusText.style.display = 'none';
@@ -536,6 +695,24 @@ class TableTennisReactionApp {
     stopPractice() {
         if (!this.isRunning && !this.isCountingDown && !this.isPaused) return;
         
+        // Save practice session to history if there was actual practice
+        if (this.sessionStartTime && this.totalCalls > 0) {
+            const actualPracticeTime = Math.round((Date.now() - this.sessionStartTime) / 1000);
+            const avgReactionTime = this.intervals.length > 0 
+                ? this.intervals.reduce((a, b) => a + b, 0) / this.intervals.length 
+                : 0;
+
+            this.historyManager.saveSession({
+                mode: this.selectedMode,
+                duration: this.selectedTime,
+                actualTime: actualPracticeTime,
+                totalCalls: this.totalCalls,
+                intervals: [...this.intervals],
+                averageReactionTime: avgReactionTime,
+                completed: false // Stopped early
+            });
+        }
+        
         this.isRunning = false;
         this.isCountingDown = false;
         this.isPaused = false;
@@ -585,6 +762,25 @@ class TableTennisReactionApp {
         if (this.directionTimeout) {
             clearTimeout(this.directionTimeout);
             this.directionTimeout = null;
+        }
+        
+        // Save practice session to history
+        if (this.sessionStartTime && this.totalCalls > 0) {
+            const sessionDuration = this.selectedTime; // Full intended duration
+            const actualPracticeTime = Math.round((Date.now() - this.sessionStartTime) / 1000);
+            const avgReactionTime = this.intervals.length > 0 
+                ? this.intervals.reduce((a, b) => a + b, 0) / this.intervals.length 
+                : 0;
+
+            this.historyManager.saveSession({
+                mode: this.selectedMode,
+                duration: sessionDuration,
+                actualTime: actualPracticeTime,
+                totalCalls: this.totalCalls,
+                intervals: [...this.intervals],
+                averageReactionTime: avgReactionTime,
+                completed: this.timeRemaining <= 0 // Whether practice was completed or stopped early
+            });
         }
         
         // Play completion sound - a pleasant ascending melody
@@ -736,6 +932,102 @@ class TableTennisReactionApp {
         this.lastDirection = null;
         this.isPaused = false;
         this.statsDiv.style.display = 'none';
+    }
+
+    toggleHistory() {
+        const isVisible = this.historyContent.style.display !== 'none';
+        
+        if (isVisible) {
+            this.historyContent.style.display = 'none';
+            this.historyToggleBtn.textContent = translate('viewHistory');
+            this.clearHistoryBtn.style.display = 'none';
+        } else {
+            this.updateHistoryDisplay();
+            this.historyContent.style.display = 'block';
+            this.historyToggleBtn.textContent = translate('hideHistory');
+            this.clearHistoryBtn.style.display = 'inline-block';
+        }
+    }
+
+    updateHistoryDisplay() {
+        const history = this.historyManager.getHistory();
+        const stats = this.historyManager.getStats();
+        
+        // Update overall stats
+        this.overallStats.innerHTML = `
+            <h3 data-i18n="overallStats">${translate('overallStats')}</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="totalSessions">${translate('totalSessions')}</span>
+                    <span class="stat-value">${stats.totalSessions}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="totalPracticeTime">${translate('totalPracticeTime')}</span>
+                    <span class="stat-value">${Math.round(stats.totalPracticeTime / 60)} ${translate('minutes')}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="totalDirections">${translate('totalDirections')}</span>
+                    <span class="stat-value">${stats.totalDirections}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="bestReactionTime">${translate('bestReactionTime')}</span>
+                    <span class="stat-value">${stats.bestReactionTime > 0 ? (stats.bestReactionTime / 1000).toFixed(3) + 's' : '-'}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="mostUsedMode">${translate('mostUsedMode')}</span>
+                    <span class="stat-value">${stats.mostUsedMode ? translate(stats.mostUsedMode === 'basic' ? 'modeBasicLabel' : 'modeAdvancedLabel') : '-'}</span>
+                </div>
+            </div>
+        `;
+        
+        // Update history list
+        if (history.length === 0) {
+            this.noHistory.style.display = 'block';
+            this.historyList.innerHTML = '<div class="no-history" data-i18n="noHistory">' + translate('noHistory') + '</div>';
+        } else {
+            this.noHistory.style.display = 'none';
+            this.historyList.innerHTML = history.map(session => this.createHistoryItem(session)).join('');
+        }
+    }
+
+    createHistoryItem(session) {
+        const modeLabel = session.mode === 'basic' ? translate('modeBasicLabel') : translate('modeAdvancedLabel');
+        const completedLabel = session.completed ? translate('yes') : translate('no');
+        const avgReactionTime = session.averageReactionTime > 0 ? (session.averageReactionTime / 1000).toFixed(3) + 's' : '-';
+        
+        return `
+            <div class="history-item">
+                <div class="history-item-header">
+                    <span class="history-date">${session.date} ${session.time}</span>
+                    <span class="history-mode">${modeLabel}</span>
+                </div>
+                <div class="history-item-stats">
+                    <div class="history-stat">
+                        <span class="history-stat-label" data-i18n="sessionDuration">${translate('sessionDuration')}</span>
+                        <span class="history-stat-value">${Math.round(session.duration / 60)} ${translate('minutes')}</span>
+                    </div>
+                    <div class="history-stat">
+                        <span class="history-stat-label" data-i18n="sessionCalls">${translate('sessionCalls')}</span>
+                        <span class="history-stat-value">${session.totalCalls}</span>
+                    </div>
+                    <div class="history-stat">
+                        <span class="history-stat-label" data-i18n="sessionAvgTime">${translate('sessionAvgTime')}</span>
+                        <span class="history-stat-value">${avgReactionTime}</span>
+                    </div>
+                    <div class="history-stat">
+                        <span class="history-stat-label" data-i18n="sessionCompleted">${translate('sessionCompleted')}</span>
+                        <span class="history-stat-value">${completedLabel}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    clearHistory() {
+        if (confirm(translate('confirmClear'))) {
+            this.historyManager.clearHistory();
+            this.updateHistoryDisplay();
+        }
     }
 }
 
