@@ -115,13 +115,50 @@ let CURRENT_LANG = 'en';
 function normalizeLanguage(langParam) {
 	if (!langParam) return 'en';
 	const lower = String(langParam).toLowerCase();
-	if (lower === 'zh' || lower === 'zh-cn' || lower === 'zh_hans') return 'zh';
+	// Support various Chinese language codes
+	if (lower === 'zh' || lower === 'zh-cn' || lower === 'zh-hans' || 
+		lower === 'zh_hans' || lower === 'zh-tw' || lower === 'zh-hant') {
+		return 'zh';
+	}
 	return 'en';
+}
+
+function detectSystemLanguage() {
+	// Try to get system language from navigator
+	let systemLang = '';
+	
+	if (navigator.languages && navigator.languages.length > 0) {
+		// Use the first preferred language
+		systemLang = navigator.languages[0];
+	} else if (navigator.language) {
+		// Fallback to single language property
+		systemLang = navigator.language;
+	}
+	
+	return normalizeLanguage(systemLang);
 }
 
 function detectLanguageFromUrl() {
 	const params = new URLSearchParams(window.location.search);
 	return normalizeLanguage(params.get('lang'));
+}
+
+function detectPreferredLanguage() {
+	// Priority order: URL parameter > System language > Default to English
+	const urlLang = detectLanguageFromUrl();
+	if (urlLang && urlLang !== 'en') {
+		// URL parameter found and it's not the default, use it
+		return urlLang;
+	}
+	
+	const systemLang = detectSystemLanguage();
+	if (systemLang && systemLang !== 'en') {
+		// System language detected and supported, use it
+		return systemLang;
+	}
+	
+	// Fallback to English
+	return 'en';
 }
 
 function translate(key, vars = undefined) {
@@ -1166,8 +1203,8 @@ class TableTennisReactionApp {
 
 // Initialize the app when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize language from URL and apply static translations first
-    setLanguage(detectLanguageFromUrl());
+    // Initialize language from system/URL and apply static translations first
+    setLanguage(detectPreferredLanguage());
     // Then boot the app so dynamic strings use CURRENT_LANG
     new TableTennisReactionApp();
 });
