@@ -164,25 +164,22 @@ function detectSystemLanguage() {
 
 function detectLanguageFromUrl() {
 	const params = new URLSearchParams(window.location.search);
-	return normalizeLanguage(params.get('lang'));
+	const langParam = params.get('lang');
+	if (!langParam) return null; // Return null when no URL parameter
+	return normalizeLanguage(langParam);
 }
 
 function detectPreferredLanguage() {
 	// Priority order: URL parameter > System language > Default to English
 	const urlLang = detectLanguageFromUrl();
-	if (urlLang && urlLang !== 'en') {
-		// URL parameter found and it's not the default, use it
+	if (urlLang !== null) {
+		// URL parameter found (either 'en' or 'zh'), use it
 		return urlLang;
 	}
 	
+	// No URL parameter, check system language
 	const systemLang = detectSystemLanguage();
-	if (systemLang && systemLang !== 'en') {
-		// System language detected and supported, use it
-		return systemLang;
-	}
-	
-	// Fallback to English
-	return 'en';
+	return systemLang; // This will be 'zh' for Chinese systems, 'en' for others
 }
 
 function translate(key, vars = undefined) {
