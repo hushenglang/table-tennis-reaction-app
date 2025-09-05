@@ -52,7 +52,19 @@ const I18N_DICTIONARY = {
 		totalDirections: 'Total Directions:',
 		mostUsedMode: 'Most Used Mode:',
 		currentWeek: 'This Week',
-		weekOf: 'Week of'
+		weekOf: 'Week of',
+		// Contact page translations
+		contact: 'Feedback',
+		contactFeedback: 'Feedback',
+		contactDescription: 'Have questions, suggestions, or feedback about the Table Tennis Reaction Practice app? I\'d love to hear from you!',
+		emailLabel: 'Email',
+		feedbackSuggestions: 'What kind of feedback is helpful?',
+		feedbackBugs: 'Bug reports or technical issues',
+		feedbackFeatures: 'Feature requests or improvements', 
+		feedbackUsability: 'User experience feedback',
+		feedbackGeneral: 'General comments or questions',
+		appVersion: 'Table Tennis Reaction Practice v1.0',
+		thanksMessage: 'Thank you for helping make this app better!'
 	},
 	zh: {
 		title: '🏓 反应训练',
@@ -106,7 +118,19 @@ const I18N_DICTIONARY = {
 		totalDirections: '总方向数：',
 		mostUsedMode: '最常用模式：',
 		currentWeek: '本周',
-		weekOf: '周'
+		weekOf: '周',
+		// Contact page translations
+		contact: '反馈',
+		contactFeedback: '反馈',
+		contactDescription: '对乒乓球反应训练应用有疑问、建议或反馈吗？很乐意听到您的声音！',
+		emailLabel: '邮箱',
+		feedbackSuggestions: '什么样的反馈最有用？',
+		feedbackBugs: '错误报告或技术问题',
+		feedbackFeatures: '功能请求或改进建议', 
+		feedbackUsability: '用户体验反馈',
+		feedbackGeneral: '一般评论或问题',
+		appVersion: '乒乓球反应训练 v1.0',
+		thanksMessage: '感谢您帮助改进这款应用！'
 	}
 };
 
@@ -334,6 +358,11 @@ class TableTennisReactionApp {
         this.historyList = document.getElementById('historyList');
         this.noHistory = document.getElementById('noHistory');
         
+        // Contact elements
+        this.contactIconBtn = document.getElementById('contactIconBtn');
+        this.contactPage = document.getElementById('contactPage');
+        this.backToMainFromContactBtn = document.getElementById('backToMainFromContactBtn');
+        
         // Practice area elements
         this.practiceArea = document.getElementById('practiceArea');
         this.timeDisplay = document.getElementById('timeRemaining');
@@ -387,6 +416,10 @@ class TableTennisReactionApp {
         this.historyIconBtn.addEventListener('click', () => this.showHistoryPage());
         this.backToMainBtn.addEventListener('click', () => this.showMainPage());
         this.clearHistoryBtn.addEventListener('click', () => this.clearHistory());
+
+        // Contact controls
+        this.contactIconBtn.addEventListener('click', () => this.showContactPage());
+        this.backToMainFromContactBtn.addEventListener('click', () => this.showMainPage());
 
         // Control buttons
         this.pauseBtn.addEventListener('click', () => this.pausePractice());
@@ -550,6 +583,7 @@ class TableTennisReactionApp {
         this.stopPractice();
         this.practiceArea.style.display = 'none';
         this.historyPage.style.display = 'none';
+        this.contactPage.style.display = 'none';
         this.selectionPage.style.display = 'block';
         this.header.style.display = 'block';
         this.resetStats();
@@ -957,13 +991,22 @@ class TableTennisReactionApp {
 
     showHistoryPage() {
         this.selectionPage.style.display = 'none';
+        this.contactPage.style.display = 'none';
         this.historyPage.style.display = 'block';
         this.header.style.display = 'none';
         this.updateHistoryDisplay();
     }
 
+    showContactPage() {
+        this.selectionPage.style.display = 'none';
+        this.historyPage.style.display = 'none';
+        this.contactPage.style.display = 'block';
+        this.header.style.display = 'none';
+    }
+
     showMainPage() {
         this.historyPage.style.display = 'none';
+        this.contactPage.style.display = 'none';
         this.selectionPage.style.display = 'block';
         this.header.style.display = 'block';
     }
@@ -1231,13 +1274,17 @@ document.addEventListener('keydown', (e) => {
     if (e.code === 'Escape') {
         const practiceArea = document.getElementById('practiceArea');
         const historyPage = document.getElementById('historyPage');
+        const contactPage = document.getElementById('contactPage');
         const backBtn = document.getElementById('backBtn');
         const backToMainBtn = document.getElementById('backToMainBtn');
+        const backToMainFromContactBtn = document.getElementById('backToMainFromContactBtn');
         
         if (practiceArea.style.display !== 'none' && backBtn) {
             backBtn.click();
         } else if (historyPage.style.display !== 'none' && backToMainBtn) {
             backToMainBtn.click();
+        } else if (contactPage.style.display !== 'none' && backToMainFromContactBtn) {
+            backToMainFromContactBtn.click();
         }
     }
     
@@ -1248,6 +1295,16 @@ document.addEventListener('keydown', (e) => {
         
         if (selectionPage.style.display !== 'none' && historyIconBtn) {
             historyIconBtn.click();
+        }
+    }
+    
+    // C key to open contact from main page
+    if (e.code === 'KeyC') {
+        const selectionPage = document.getElementById('selectionPage');
+        const contactIconBtn = document.getElementById('contactIconBtn');
+        
+        if (selectionPage.style.display !== 'none' && contactIconBtn) {
+            contactIconBtn.click();
         }
     }
     
