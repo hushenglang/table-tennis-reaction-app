@@ -170,14 +170,7 @@ function detectLanguageFromUrl() {
 }
 
 function detectPreferredLanguage() {
-	// Priority order: URL parameter > System language > Default to English
-	const urlLang = detectLanguageFromUrl();
-	if (urlLang !== null) {
-		// URL parameter found (either 'en' or 'zh'), use it
-		return urlLang;
-	}
-	
-	// No URL parameter, check system language
+	// Use only system default language - no URL parameter detection
 	const systemLang = detectSystemLanguage();
 	return systemLang; // This will be 'zh' for Chinese systems, 'en' for others
 }
