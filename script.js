@@ -5,6 +5,7 @@ const I18N_DICTIONARY = {
 		titlePlain: 'Reaction Practice',
 		subtitle: 'Train your reflexes with random direction calls',
 		duration: 'Practice Duration',
+		interval: 'Switch Interval (ms)',
 		mode: 'Practice Mode',
 		basicMode: 'Basic Mode',
 		basicDesc: 'Left & Right only',
@@ -59,6 +60,7 @@ const I18N_DICTIONARY = {
 		titlePlain: '反应训练',
 		subtitle: '通过随机方向口令训练反应能力',
 		duration: '练习时长',
+		interval: '切换间隔 (毫秒)',
 		mode: '练习模式',
 		basicMode: '基础模式',
 		basicDesc: '仅左与右',
@@ -242,10 +244,17 @@ class PracticeHistoryManager {
     }
 }
 
+const MIN_SWITCH_INTERVAL_MS = 100;
+const MAX_SWITCH_INTERVAL_MS = 1000;
+const SWITCH_INTERVAL_STEP_MS = 100;
+const DEFAULT_SWITCH_INTERVAL_MS = 500;
+const SWITCH_INTERVAL_VARIATION = 0.2; // ±20% random variation
+
 class TableTennisReactionApp {
     constructor() {
         this.selectedTime = 60; // Default 1 minute
         this.selectedMode = 'basic'; // Default basic mode
+        this.selectedIntervalMs = DEFAULT_SWITCH_INTERVAL_MS;
         this.timeRemaining = 60;
         this.isRunning = false;
         this.isPaused = false;
@@ -282,6 +291,9 @@ class TableTennisReactionApp {
         this.durationInput = document.getElementById('durationInput');
         this.decreaseBtn = document.getElementById('decreaseBtn');
         this.increaseBtn = document.getElementById('increaseBtn');
+        this.intervalInput = document.getElementById('intervalInput');
+        this.decreaseIntervalBtn = document.getElementById('decreaseIntervalBtn');
+        this.increaseIntervalBtn = document.getElementById('increaseIntervalBtn');
 
         this.modeButtons = document.querySelectorAll('.mode-btn');
         this.startPracticeBtn = document.getElementById('startPracticeBtn');
@@ -333,7 +345,14 @@ class TableTennisReactionApp {
         this.durationInput.addEventListener('input', (e) => {
             this.selectTimer(parseFloat(e.target.value) * 60); // Convert minutes to seconds
         });
-        
+
+        // Switch interval controls
+        this.decreaseIntervalBtn.addEventListener('click', () => this.adjustInterval(-SWITCH_INTERVAL_STEP_MS));
+        this.increaseIntervalBtn.addEventListener('click', () => this.adjustInterval(SWITCH_INTERVAL_STEP_MS));
+        this.intervalInput.addEventListener('input', (e) => {
+            this.selectInterval(parseInt(e.target.value, 10));
+        });
+
         // Remove unused event listeners for elements that don't exist
 
         // Mode selection
@@ -461,7 +480,30 @@ class TableTennisReactionApp {
         this.updateTimeDisplay();
         this.updateStartButton();
     }
-    
+
+    adjustInterval(changeMs) {
+        const currentValue = parseInt(this.intervalInput.value, 10);
+        const newValue = Math.max(
+            MIN_SWITCH_INTERVAL_MS,
+            Math.min(MAX_SWITCH_INTERVAL_MS, currentValue + changeMs)
+        );
+        this.intervalInput.value = newValue;
+        this.selectInterval(newValue);
+    }
+
+    selectInterval(intervalMs) {
+        if (Number.isNaN(intervalMs)) return;
+        const clamped = Math.max(
+            MIN_SWITCH_INTERVAL_MS,
+            Math.min(MAX_SWITCH_INTERVAL_MS, intervalMs)
+        );
+        this.selectedIntervalMs = clamped;
+        if (parseInt(this.intervalInput.value, 10) !== clamped) {
+            this.intervalInput.value = clamped;
+        }
+        this.updateStartButton();
+    }
+
     // Removed unused methods that reference non-existent elements
 
     selectMode(mode) {
@@ -707,6 +749,7 @@ class TableTennisReactionApp {
             this.historyManager.saveSession({
                 mode: this.selectedMode,
                 duration: this.selectedTime,
+                switchIntervalMs: this.selectedIntervalMs,
                 actualTime: actualPracticeTime,
                 totalCalls: this.totalCalls,
                 intervals: [...this.intervals],
@@ -773,6 +816,7 @@ class TableTennisReactionApp {
             this.historyManager.saveSession({
                 mode: this.selectedMode,
                 duration: sessionDuration,
+                switchIntervalMs: this.selectedIntervalMs,
                 actualTime: actualPracticeTime,
                 totalCalls: this.totalCalls,
                 intervals: [...this.intervals],
@@ -799,10 +843,12 @@ class TableTennisReactionApp {
 
     scheduleNextDirection() {
         if (!this.isRunning) return;
-        
-        // Random interval between 1 and 1.5 seconds (1000-1500ms)
-        const randomInterval = Math.random() * 500 + 1000;
-        
+
+        // Apply ±SWITCH_INTERVAL_VARIATION around the configured interval.
+        const base = this.selectedIntervalMs;
+        const jitter = (Math.random() * 2 - 1) * SWITCH_INTERVAL_VARIATION;
+        const randomInterval = base * (1 + jitter);
+
         this.directionTimeout = setTimeout(() => {
             if (this.isRunning) {
                 this.showDirection();
