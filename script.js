@@ -244,10 +244,10 @@ class PracticeHistoryManager {
     }
 }
 
-const MIN_SWITCH_INTERVAL_MS = 100;
+const MIN_SWITCH_INTERVAL_MS = 500;
 const MAX_SWITCH_INTERVAL_MS = 1000;
 const SWITCH_INTERVAL_STEP_MS = 100;
-const DEFAULT_SWITCH_INTERVAL_MS = 500;
+const DEFAULT_SWITCH_INTERVAL_MS = 800;
 const SWITCH_INTERVAL_VARIATION = 0.2; // ±20% random variation
 
 class TableTennisReactionApp {
