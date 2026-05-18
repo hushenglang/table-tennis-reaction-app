@@ -661,11 +661,11 @@ header p {
     animation: fadeIn 0.5s ease-in;
 }
 
-.duration-section, .mode-section {
+.duration-section, .interval-section, .mode-section {
     margin-bottom: 2.5rem;
 }
 
-.duration-section h2, .mode-section h2 {
+.duration-section h2, .interval-section h2, .mode-section h2 {
     color: #2c3e50;
     margin-bottom: 1.5rem;
     font-size: 1.8rem;
@@ -1359,11 +1359,11 @@ header p {
     }
     
     /* Combined selection page mobile styles */
-    .duration-section, .mode-section {
+    .duration-section, .interval-section, .mode-section {
         margin-bottom: 2rem;
     }
-    
-    .duration-section h2, .mode-section h2 {
+
+    .duration-section h2, .interval-section h2, .mode-section h2 {
         font-size: 1.6rem;
         margin-bottom: 1.2rem;
     }
@@ -1661,11 +1661,11 @@ header p {
     }
     
     /* Selection page optimizations for iPhone 14 Pro */
-    .duration-section, .mode-section {
+    .duration-section, .interval-section, .mode-section {
         margin-bottom: 1.5rem;
     }
-    
-    .duration-section h2, .mode-section h2 {
+
+    .duration-section h2, .interval-section h2, .mode-section h2 {
         font-size: 1.4rem;
         margin-bottom: 0.8rem;
     }
