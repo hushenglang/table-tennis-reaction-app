@@ -9,6 +9,10 @@ const I18N_DICTIONARY = {
 		mode: 'Practice Mode',
 		basicMode: 'Basic Mode',
 		basicDesc: 'Left & Right only',
+		dirLeft: 'L',
+		dirRight: 'R',
+		dirLeftForward: 'LF',
+		dirRightForward: 'RF',
 		advancedMode: 'Advanced Mode',
 		advancedDesc: '4 directions with forward shots',
 		startPractice: 'START',
@@ -63,7 +67,11 @@ const I18N_DICTIONARY = {
 		interval: '切换间隔 (毫秒)',
 		mode: '练习模式',
 		basicMode: '基础模式',
-		basicDesc: '仅左与右',
+		basicDesc: '仅反手与正手',
+		dirLeft: '反手',
+		dirRight: '正手',
+		dirLeftForward: '反手前',
+		dirRightForward: '正手前',
 		advancedMode: '进阶模式',
 		advancedDesc: '四个方向含前球',
 		startPractice: '开始',
@@ -117,13 +125,16 @@ let CURRENT_LANG = 'en';
 function normalizeLanguage(langParam) {
 	if (!langParam) return 'en';
 	const lower = String(langParam).toLowerCase();
-	if (lower === 'zh' || lower === 'zh-cn' || lower === 'zh_hans') return 'zh';
+	if (lower.startsWith('zh')) return 'zh';
 	return 'en';
 }
 
 function detectLanguageFromUrl() {
 	const params = new URLSearchParams(window.location.search);
-	return normalizeLanguage(params.get('lang'));
+	const urlLang = params.get('lang');
+	if (urlLang) return normalizeLanguage(urlLang);
+	// Fall back to device/browser language
+	return normalizeLanguage(navigator.language || navigator.userLanguage);
 }
 
 function translate(key, vars = undefined) {
